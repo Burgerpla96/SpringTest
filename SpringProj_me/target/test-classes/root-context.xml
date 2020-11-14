@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- 단위 테스트 용 빈 설정 파일 -->
+	<!-- 단위 테스트에서는  JNDI 사용시 에러 즉 테스트시에는 로컬 데이터 소스를 
+	          사용해야한다.
+		 DataSource정의를 별도의 XML 파일로 가져 와서 테스트 중에 
+		 JNDI 대신 사용해야한다 즉 테스트시에는 root-context.xml파일을 src/test/resources에 있는 파일 사용
+	-->
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	
+	<!-- Test에서 JNDI가 들어가면 오류여서 test에서 사용하는 JNDI를 전부 jdbc로 바꿈 -->
+	<bean id="dataSourceByJNDI" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:orcl"/>
+		<property name="username" value="maven"/>
+		<property name="password" value="maven"/>
+	</bean>
+	<bean id="dataSourceByJDBC" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:orcl"/>
+		<property name="username" value="maven"/>
+		<property name="password" value="maven"/>
+	</bean>
+	
+</beans>

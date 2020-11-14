@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- DB연동 작업 -->
+	<!-- 각 디스패처 서블릿에 의해 생성된 WebApplicationContext영역(Context영역)에서 공통으로 사용할 빈 설정 -->
+	<!-- Spring JDBC API 사용 -->
+	<bean id="dataSourceByJDBC" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+		<property name="username" value="maven"/>
+		<property name="password" value="maven"/>
+	</bean>
+
+	<!-- Spring JNDI사용(커넥션 풀) -->
+	<bean id="dataSourceByJNDI" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="spring/maven"/>
+		<!-- server.xml의 global tag 안에 context tag의 name 속성값이 jndiName의 value 속성값 -->
+		<property name="resourceRef" value="true"/>
+		<!-- 위의 속성 resourceRef을 사용하지 않는 경우 기본값은 false
+		해당 Was 서버의 루트 디렉토리를 적어주지 않아도 된다.
+		원래 써야 함  ->   java:/comp/env/spring/maven
+		 -->
+	</bean>
+	
+	
+	<!-- 마이바티스 지원을 위한 빈 등록 -->
+	<!-- 1]SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 데이타소스:데이타베이스 연결정보 -->
+		<property name="dataSource" ref="dataSourceByJNDI"/>
+		<!-- 환경설정 파일 위치 설정 -->
+		<property name="configLocation" value="classpath:com/kosmo/springapp/onememo/mybatis/configuration.xml"/>
+	</bean>
+	<!-- 2]SqlSessionTemplate -->
+	<bean id="template" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"/>
+	</bean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</beans>

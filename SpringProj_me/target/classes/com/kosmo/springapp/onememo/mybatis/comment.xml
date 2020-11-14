@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace속성:매퍼파일의 완전한경로 .xml는 생략 -->
+<!-- ※ibatis와는 다르게 id값에 .(dot)를 사용 못한다. -->
+<mapper namespace="com.kosmo.springapp.onememo.mybatis.comment">
+	<!-- resultType을 Map으로 지정시 키값(대문자)은 컬럼명이고 벨류값은 컬럼에 저장된 값 -->
+	
+	<delete id="commentDeleteByNo" parameterType="java.util.Map">
+		DELETE memoComment WHERE no=#{no}
+		<!-- 자식이라고 cno로 삭제가 아니다. -->
+	</delete>
+	
+	<insert id="commentInsert" parameterType="java.util.Map">
+		INSERT INTO memoComment VALUES(SEQ_MEMOCOMMENT.nextval,#{linecomment},SYSDATE,#{id},#{no})
+	</insert>
+	
+	<select id="commentSelectList" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT m.*,name FROM memoComment m JOIN member me ON m.id = me.id
+		WHERE m.no = #{no}
+		ORDER BY cno DESC 
+	</select>
+		
+</mapper>

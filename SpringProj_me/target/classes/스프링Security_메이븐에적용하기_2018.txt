@@ -1,0 +1,566 @@
+[Spring Security 메이븐에 적용하기] 
+-Maven기준 설정 즉  프로젝트 생성시 Spring Legacy Project->Spring MVC Project로 생성
+
+	 1)pom.xml 에 spring security dependency추가
+	   (2018년 9월 기준 최신 버전은 4.2.8.RELEASE)  
+
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-core</artifactId>
+		    <version>4.2.8.RELEASE</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-web</artifactId>
+		    <version>4.2.8.RELEASE</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-config</artifactId>
+		    <version>4.2.8.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>4.2.8.RELEASE</version>
+		</dependency>
+	
+	
+	2) web.xml에 spring-security filter등록 및 context-param 등록
+
+	<!-- spring-security filter -->
+    <!-- 필터명은 반드시 springSecurityFilterChain으로-->
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+
+	<filter-mapping>
+
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern><!-- /*로 모든 요청을 security 필터를 이용 -->
+	</filter-mapping> 
+	<!-- 스프링 씨큐러티 설정 파일은 반드시 컨텍스트 초기화 파라미터로
+	     왜냐하면 springSecurityFilterChain 이 시큐러티 관련 설정파일을 찾음
+     -->
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring/root-context.xml
+			/WEB-INF/spring/security/security-context.xml
+		</param-value>
+	</context-param> 
+	
+	<!-- 시작 페이지를 home.bbs로 설정 하기 위한 추가
+	     그리고 HomeController.java에서 매핑 수정
+		 @RequestMapping(value = "/home.bbs", method = RequestMethod.GET)
+	-->
+	<welcome-file-list>
+        <welcome-file>home.bbs</welcome-file>
+      </welcome-file-list>
+
+
+	3) WEB-INF/spring/security/security-context.xml 생성(경로 및 파일명은 임으로)
+
+	생성방법]new -> Spring Bean Configuration File -> security접두어 선택
+	<!--
+	
+	auto-config='true' :  기본 로그인페이지/ HTTP 기본인증 / 로그아웃기능사용을 위한 설정
+	use-expressions="true" : <intercept-url>의 access 속성에 표현식을 사용한다는 의미
+	                         "false"면 access="USER" 로 값을 바로 사용
+			                 "true" 면 access="hasRole('ROLE_USER')" 사용 ROLE_는 생략 가능
+	-->
+		
+	<security:http auto-config="true" use-expressions="true">
+		<!--
+		<intercept-url> : URL pattern에 대해 접근 권한을 설정.따라서 URL pattern에 따라 여러개 설정 가능
+		                  단, 여러개 설정시 위에서 차례로 순서대로 적용됨으로 
+		                  가장 특수한 경우를 위쪽에 놓고 일반적인 경우를 아래쪽에 설정한다
+						  
+						  
+		
+		-->
+	      <!-- 모든 패턴(/**)에 대해 누구나 접근을  허용(permitAll)하고  /BBS로 시작하는 모든 패턴에 대해서는
+		       USER권한을 가진 사람만 접근을 허용하겠다는 의미-->
+			   
+		  <security:intercept-url pattern="/**" access="permitAll" />		
+		  <security:intercept-url pattern="/BBS/**" access="hasRole('USER')" />
+		  
+		  <!--
+		  <security:form-login/>요소로  로그인 설정:	  
+					      login-page: 로그인처리 URL의 기본값은 login-page="/login" 
+		                              사용자 정의 폼 사용시 login-page="사용자 정의 로그인페이지 URL지정"
+						  default-target-url:로그인 한 후에 보여질 페이지 URL지정. 
+						  authentication-failure-url: 로그인 실패시 보여질 페이지 URL지정. . 
+						                              기본값은 /login?error
+						
+						  login-processing-url:로그인 처리 URL지정.로그인 폼의 action속성값.기본값은 /loginProcess
+						  username-parameter : 로그인 폼에 아이디 입력 필드에 지정한 name 속성값. 기본값은 "username"
+					      password-parameter : 로그인 폼에 비밀번호 입력 필드에 지정한 name 속성값. 기본값은 "password" 
+						
+						
+						
+		  
+		  -->
+		    
+		  <security:form-login 
+		    		   
+		    		    login-page="/Member/login.bbs"
+		                default-target-url="/Member/login.bbs"
+		                always-use-default-target="true" 
+		                authentication-failure-url="/Member/login.bbs?error"
+		                login-processing-url="/Member/loginProcess.bbs"
+		                username-parameter="id"
+		                password-parameter="pass" />
+						
+			<!--
+			<security:logout/>요소로 로그아웃 설정:
+			logout-url :로그아웃 URL지정. 기본값은 "/logout" .			
+			delete-cookies : 쿠키 삭제 여부
+	        invalidate-session : 세션 제거 여부
+			-->
+		   <security:logout logout-url="/logout"		            	            
+		            delete-cookies="true"
+					invalidate-session="true"
+		            />
+					  
+		    <!--
+			<security:csrf disabled="false"/> : CSRF(Cross Site Resquest Fosery) 공격을 방어하기 위한 설정
+		                               CSRF방어 설정시에는  사용자 정의 로그인 폼 사용시에
+		                               아래 hidden태그 필수
+		                               <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+		                               또한 
+		                               로그아웃을 POST 방식으로 해야 한다. 
+		                               CSRF 방어를 사용하지 않도록 되어있다면 GET 방식으로도 처리가능하다
+										예]
+										<form:form action="<c:url value='/logout'/>" method="POST">
+											<input type="submit" value="로그아웃" />
+										</form:form>
+		 -->
+			
+			
+			
+		            
+		    <security:csrf disabled="true"/><!--false로 설정한 경우 Top.jsp의 로그아웃 요청을 POST방식으로 변경해야 한다-->
+		    <!-- 
+			<security:session-management/> 중복 로그인 방지를 위한 요소 :
+			
+				invalid-session-url : 세션이 끊어?을때 이동 할 URL지정(중복으로 인해 끊어진 경우도 해당함).
+				max-sessions="1" : 최대 허용 가능 중복 세션 수.(중복 로그인 방지하기 위해 1로 설정)
+				expired-url :  만기된 세션 즉 세션 유효시간이 경과 한 경우 이동할 URL(중복으로 인해 끊어진 경우도 해당함).
+			
+			    한 명이 로그인하고 다른 브라우저나 지역에서 동일한 아이디로 로그인 하게 되면 
+				먼저 로그인한 사람의 세션이 끊기게 된다. 
+				만약 첫 번째 로그인한 세션을 유지하고 두 번째 중복 로그인한 세션을 막으려면 
+				error-if-maximum-exceeded="true"를 <security:concurrency-control /> 에 설정하면 된다
+				
+			
+			-->
+		    <security:session-management invalid-session-url="/Member/login.bbs" >
+
+           	<security:concurrency-control max-sessions="1" expired-url="/Member/login.bbs" />
+
+    		</security:session-management>
+		
+	 </security:http>
+	 
+	 <security:authentication-manager>
+	 
+			<!--
+			<security:jdbc-user-service  :데이타 베이스를 사용할때
+				data-source-ref : 데이터베이스 연결을 나타내는 dataSource.
+			    role-prefix : "ROLE_" 와 같은 롤 앞에 붙는 prefix 를 지정. 
+				              권한 체크시 여기에 지정된 값을 붙여서 확인. 
+							  데이터베이스에 ROLE_USER 형식으로 데이터를 넣은 경우 여기서는 값을 지정하지 않은다
+							 
+				users-by-sername-query : 아이디로 사용자 정보를 가져오는 쿼리 설정
+
+				authorities-by-username-query : 아이디로  권한정보를 가져오는 쿼리 설정.
+
+			
+			-->
+	 		
+	 		<security:authentication-provider>
+	 			<security:jdbc-user-service 
+			        data-source-ref="datasource"			        
+			        users-by-username-query="select id as username, pass as password, enabled from member where id = ?"
+			        authorities-by-username-query="select id as username, authority AS authority  from member where id = ?"
+			        
+			    />
+	 		
+	 		
+	 		
+	 		</security:authentication-provider>
+				
+	 
+	 		
+			<!--  
+			<security:user-service> : 데이타 베이스를 사용하지않을때
+			<security:authentication-provider>
+			
+				<security:user-service>
+
+					<security:user name="guest" authorities="ROLE_GUEST" password="guest"/>
+
+					<security:user name="user" authorities="ROLE_USER" password="user"/>
+
+				</security:user-service>
+				
+			</security:authentication-provider>
+			-->
+		</security:authentication-manager>	
+		
+		
+    4)인증된 사용자를 확인하는 방법
+
+	
+	-security를 사용하면 사용자 정보가 인증후 사용자 요청이 들어오는 Controller에서 
+	 요청을 받은 메서드의 파라미터로 Authentication 를 지정하면 된다.
+	-자바단이 아닌 뷰단에서의 접근을 위해 security Tag 사용
+	
+
+	
+
+	- Controller 단(.java)
+        ※이제는 로그인 처리나 로그아웃 처리를 할 필요가 없다 스프링 보안 프레임 워크인
+	      Spring Security에서 다 처리가 된다
+	      따라서 로그인 처리나 로그아웃 부분 주석처리
+		
+		아래는 OneMemoController.java의 일부 예 이다
+	
+	    =======================OneMemoController.java==============================================
+	  
+		@RequestMapping(value="/BBS/Write.bbs",method=RequestMethod.POST)
+		public String writeOK(@RequestParam Map map,HttpSession session,Authentication auth) throws Exception{
+			//서비스 호출]
+			//작성자의 id를 DTO에설정
+			//스프링 씨큐리티 적용 전
+			//map.put("id",session.getAttribute("id"));;
+			
+			System.out.println("인증된 사용자 :"+auth.getPrincipal());
+			UserDetails authenticated=(UserDetails)auth.getPrincipal();
+			
+			System.out.println("아이디: "+authenticated.getUsername());
+			System.out.println("비밀번호: "+authenticated.getPassword());//null
+			System.out.println("권한:"+authenticated.getAuthorities().toString());
+			//스프링 씨큐리티 적용 후
+			map.put("id",authenticated.getUsername());
+			
+			memoService.insert(map);
+			
+			
+			//뷰정보 반환:목록으로 이동
+			return "forward:/BBS/List.bbs";
+		}///////////////////////////
+
+
+	}
+
+	
+	
+	
+	
+	- 뷰단(.jsp)
+	
+
+     security tag는 authentication 과 authorize,accesscontrollist  이렇게 3가지가 지원 됨.
+	 가장 많이 사용하는 사용자정보를 가져오는 태그는 authentication 이다.
+
+	 security에서 인증된 사용자 정보는 authentication에 저장되어있다
+	 
+	
+	
+		
+		
+	페이지 상단에
+	<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>추가
+	
+	로그인 여부 판단은 아래 코드로 한다
+	
+	<sec:authorize access="isAnonymous()">
+		인증받지 못한 경우 즉 로그인이 안된 경우
+	</sec:authorize>
+		
+	<sec:authorize access="isAuthenticated()">
+        로그인 한 경우	
+	</sec:authorize>
+	<fieldset>
+			<legend>인증된 사용자 정보</legend>
+			<ul type="A">
+				<li>principal : <sec:authentication property="principal"/></li>
+				<li>principal.username : <sec:authentication property="principal.username"/></li>
+				<li>principal.password : <sec:authentication property="principal.password"/></li>
+				<li>principal.email : <sec:authentication property="principal.email"/></li>
+				<li>principal.enabled : <sec:authentication property="principal.enabled"/></li>
+				<li>principal.accountNonExpired : <sec:authentication property="principal.accountNonExpired"/></li>
+			</ul>
+			
+		</fieldset>
+	
+	아래는 Login.jsp의 예 이다
+	
+	=======================Login.jsp==============================================
+	
+	<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+	<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+	<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+
+	<!-- 내용 시작 -->
+	<div class="container">
+		
+		<div class="page-header">
+			<h1>한줄메모 게시판 프로젝트<small>로그인 페이지</small></h1>
+		</div>
+		<div class="row">
+		<sec:authorize access="isAnonymous()">
+			<c:if test="${param.error != null}">
+				<h3>아이디와 비밀번호가 틀려요.</h3>
+			</c:if>
+			<div class="col-md-12">					
+				<form class="form-horizontal" method="post" action="<c:url value='/Member/loginProcess.bbs'/>">
+					<!-- 
+					<security:csrf disabled="false"/>로 설정한 경우 주석해제
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+					-->
+					<div class="form-group">
+						<label for="id" class="col-sm-2  control-label">아이디</label>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" name="id" id="id" placeholder="아이디를 입력하세요">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="pass" class="col-sm-2  control-label">비밀번호</label>
+						<div class="col-sm-3">
+							<input type="password" class="form-control" id="pass" name="pass" placeholder="비밀번호를 입력하세요">
+						</div>
+					</div>						  
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn btn-danger">로그인</button>
+						</div>
+					</div>
+				</form>										
+			</div>	
+		</sec:authorize>
+			
+		<sec:authorize access="isAuthenticated()">
+
+
+			<div class="alert alert-success " role="alert"><sec:authentication property="principal.username"/>님 즐감하세요</div>
+			<form action="<c:url value='/logout'/>" method="POST">
+			    <!--
+				<security:csrf disabled="false"/>로 설정한 경우 주석해제
+			    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>	
+				-->
+				<input type="submit" value="로그아웃" />
+			</form>
+		</sec:authorize>	
+		
+	</div>
+	<!-- 내용 끝 -->
+   
+
+	5)Member 테이블 수정
+	 테이블을 사용자 테이블과 권한테이블 두개로 나눠서 하는게 원칙.
+	 우리는 테이블 하나로 사용.
+     CREATE TABLE MEMBER(id varchar2(10) primary key,pass varchar2(10) not null ,name nvarchar2(10) not null,regidate date default sysdate, 
+	  ENABLED NUMBER(1) DEFAULT 1,
+     AUTHORITY varchar2(20)  DEFAULT 'ROLE_USER');
+
+
+
+	샘플 데이타 입력
+	
+	 INSERT INTO MEMBER VALUES('kim','1234','김길동',default,default,'ROLE_USER');
+	 INSERT INTO MEMBER VALUES('lee','1234','이길동',default,default,'ROLE_USER');
+	 INSERT INTO MEMBER VALUES('park','1234','박길동',default,default,'ROLE_USER');
+
+
+	
+	
+	
+	※접근과 관련된 표현식에 사용하는 주요 메소드 혹은 객체들
+	access=""
+	
+	hasRole([role])	: 로그인된 사용자가 지정된 role을 가지고 있으면 true를 반환 하며 승인
+	                  제공된 role이 'ROLE_'로 시작하지 않으면 기본적으로 'ROLE_'를 추가한다. 
+    hasAnyRole([role1,role2]): 로그인된 사용자가 콤마(,)로 분리하여 주어진 role들 중 하나라도 가지고 있으면 true를 반환하며 승인한다
+              	
+	hasAuthority([authority]) :	로그인된 사용자가 지정된 권한이 있으면 true를 반환하며 승인한다
+	hasAnyAuthority([authority1,authority2]) :	현재 로그인된 사용자가 콤마(,)로 분리하여 주어진 권한들중 하나라도 가지고 있으면 true를 반환하며 승인한다.
+	
+	
+	permitAll : 모든 접근자 승인
+    denyAll : 모든 접근 거부
+	
+	
+	principal: 현재 사용자를 나타내는 principal 객체
+	authentication: SecurityContext로 부터 얻은 Authentication 객체.
+	isAnonymous() :	현재 사용자가 익명사용자(로그인 안됨) 사용자이면 true를 반환.
+    isAuthenticated() :	현재 사용자가 로그인된 사용자라면 true를 반환.
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+	 
+
+
+
+
+
+ 
+
+
+
+	
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+	
+	
+	
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+
+
+
+
+
+
