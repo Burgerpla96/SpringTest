@@ -6,7 +6,9 @@
 <!-- ※ibatis와는 다르게 id값에 .(dot)를 사용 못한다. -->
 <mapper namespace="com.kosmo.springapp.onememo.mybatis.onememo">
 	
-	<!-- 자바빈 oneMemoDTO에  DB결과를 여기서 맵핑한다. id이름으로 접근해서 쓸 수 있다. -->
+	<!-- 자바빈 OneMemoDTO에  DB결과를 여기서 맵핑한다. id이름으로 접근해서 쓸 수 있다. -->
+	<!-- configuration.xml에서 별칭해서 oneMemoDTO 타입으로 쓸 수 있다. -->
+	<!-- resultMap을 하면 컬럼에 별칭을 해서 bean 객체의 속성과 컬럼명이 달라도 직접 매핑을 해서 괜찮다!!  -->
 	<resultMap type="oneMemoDTO" id="oneMemoDTOResult">
 		<!-- property는 자바빈의 속성명,  column은 table의 컬럼명 -->
 		<result property="no" column="no"/>
@@ -15,7 +17,6 @@
 		<result property="postDate" column="postDate"/>
 		<result property="id" column="id"/>
 		<result property="name" column="name"/><!-- 실제 테이블에는 없어도 join select결과의  column결과를 맵핑-->
-	
 	</resultMap>
 	
 	
@@ -29,7 +30,7 @@
 		 단, parameterType이 int나 String 인 경우는 임의의 값을 줘도 무방
 	- 부등호(<,>)를 써야할 시, &lt; &gt;로 사용하기
 		혹은 [CDATA[WHERE sal >= 3000 ]] 쓰기
-	 -->
+	-->
 
 
 	<select id="memoIsLogin" parameterType="java.util.Map" resultType="int">
@@ -46,7 +47,17 @@
 		VALUES(SEQ_ONEMEMO.nextval,#{title},#{content},#{id})		
 	</insert>
 	<!-- resultMap 으로 위에서 처리한 것 이용 -->
-	<select id="memoSelectOne" parameterType="java.util.Map" resultMap="oneMemoDTOResult">
+	<!-- 질문) resultMap과 resultType으로 한 것의 차이.. -->
+	<!-- 
+	resultMap="oneMemoDTOResult" 
+	resultType="com.kosmo.springapp.onememo.service.OneMemoDTO" 
+	(configuration.xml에서 typeAliases tag로 별칭한)
+	resultType="oneMemoDTO" 까지 모두 된다.
+	모두 된다.
+	-->
+	<!-- resultMap을 하면 컬럼에 별칭을 해서 bean 객체의 속성과 컬럼명이 달라도 직접 매핑을 해서 괜찮다.  -->
+	
+	<select id="memoSelectOne" parameterType="java.util.Map" resultMap="oneMemoDTOResult" >
 		SELECT o.*, m.name FROM member m JOIN onememo o ON m.id = o.id 
 		WHERE no = #{no}
 	</select>
@@ -60,7 +71,6 @@
 	</delete>
 
 	
-
 
 
 

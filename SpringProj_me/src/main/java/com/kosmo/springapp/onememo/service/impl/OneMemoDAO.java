@@ -14,7 +14,7 @@ import com.kosmo.springapp.onememo.service.OneMemoService;
 
 /*
  * mybatis framework 사용
- * SqlSessionFactory 타입 개겣 사용
+ * SqlSessionFactory 타입 객체 사용
  * 형변환 불필요(ibatis는 형변환이 필요하다.)
  * -------------------------------------------------------
  * 
@@ -27,7 +27,7 @@ import com.kosmo.springapp.onememo.service.OneMemoService;
  * 				단일 레코드일때: selectOne()
  * 		2) 쿼리문이 INSERT - insert()
  * 				 DELETE - delete()
- * 				 UPDATE - update()에서드
+ * 				 UPDATE - update() 메서드
  * 				단, I/D/U 일때는 commit() 호출
  * 3. close() 호출
  * 
@@ -89,7 +89,6 @@ public class OneMemoDAO implements OneMemoService {
 			rs = psmt.executeQuery();
 			rs.next();
 			if(rs.getInt(1)==0) return false;
-			
 		} 
 		catch (SQLException e) {e.printStackTrace();return false;}
 		*/
@@ -153,7 +152,6 @@ public class OneMemoDAO implements OneMemoService {
 		*/
 		//방법 3.
 		return sqlMapper.insert("memoInsert", map);
-		
 	}
 
 	@Override

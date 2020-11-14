@@ -211,8 +211,6 @@
 		}//////////////showComments_
 	
 	
-	
-	
 		function isDelete(){
 			if(confirm("정말로 삭제 하시겠습니까?")){
 				location.replace("<c:url value="/OneMemo/BBS/Delete.do?no=${record.no}"/>");
