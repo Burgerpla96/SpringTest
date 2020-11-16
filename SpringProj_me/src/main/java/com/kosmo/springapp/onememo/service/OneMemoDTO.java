@@ -34,7 +34,9 @@ public class OneMemoDTO {
 	private String content;
 	private java.sql.Date postDate;
 	private String id;	
-	private String name;;//이름 출력용
+	private String name;//이름 출력용
+	//각 글에 따른 댓글 총 수 출력용
+	private String commentCount;
 	
 	
 	

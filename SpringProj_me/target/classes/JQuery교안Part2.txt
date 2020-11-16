@@ -1,0 +1,652 @@
+[ jQuery Ajax관련 API 교안]
+
+AJAX(Asynchronous JavaScript and Xml)
+	- javascript를 사용한 비동기 통신 
+	- 페이지 이동이 발생하지않고 즉 새로고침이 일어나지 않고 서버로부터
+          결과를 받아 올 수 있음
+
+	처리 순서]
+
+	사용자가 이벤트 발생->
+	자바스크립트의 DOM을 사용해서 필요한 정보를 구한뒤
+        XMLHttpRequest객체를 통해서 웹 서버에 요청을 전달
+        ->웹서버는 XMLHttpRequest로부터의 요청을 알맞게 차리한 후 결과를 xml이나
+          단순 text 혹은 JSON을 생성해서 XMLHttpRequest에 전송
+	->서버로부터 응답이 도착하면 
+	   XMLHttpRequest객체는 자바스크립트에
+          도착사실을 알리고 자바스크립트는 응답 데이터와 DOM을 이용해서
+          사용자 화면에 반영
+
+ ※JSON(JavaScript Object Notation)] 이란?
+			    
+				-네트웍을 통해 데이타를 전송할때 성능이 좋은 데이타 형
+				-Key와 Value로 구성
+				-[]를 사용하여 배열형 Value 사용가능
+				-JSON공식 사이트:http://www.json.org
+				-경량의 데이터 교환방식으로 인터넷에서 데이타를 주고받을때 표현하는 방법
+
+				-JSON라이브러리 다운로드(JAR파일) :http://www.json.org ->
+				하단에서 json-simple클릭->
+				우측의 getting Started에서  json-simple-1.1.1.jar다운로드후 
+								   WEB-INF/lib에 복사
+
+				예]
+				   -JAVASCRIPT
+
+				   var member ={"id":"kim","pwd":"1234"};
+				   var id=member.id;//id에는 kim이 저장됨. 
+				   JSON데이타명.키값으로 VALUE값을 가져옴.
+
+				   var fruits=["apple","banana","grape"];//자바스트립트의 배열 표기법
+				   var fruit=fruits[0];//fruit에는 apple이 저장됨
+				   //members라는 키값에 배열을 대응하도록 데이타 구성
+				   var list={"members":[{"id":"kim","pwd":"1234"},{"id":"choi","pwd":"5678"},{"id":"lim","pwd":"8989"}]};
+				   //members라는 키값에 매핑됨 첫번째 인덱스 인 {"id":"kim","pwd":"1234"}의 json데이타를 가져옴 	
+				   var member=list.members[0];
+				   var id=member.id;
+
+
+[load()메서드]
+
+
+	-서버측 페이지를 인클루드할때 주로 사용
+	-include와 같은 개념.단 비동기적으로 페이지를 로드해 옴
+	-주로 메인 페이지에서 각각의 섹션들의 내용을 비 동기적으로 로드 할때 사용
+
+	
+	$(선택자).load(url,params,callback) 
+	url:서버측 페이지 url
+	params:서버측 페이지로 전달할 파라미터값 즉 쿼리 스트링
+	callback:콜백함수
+
+	
+	$(선택자).load("파일명")
+	혹은
+	$(선택자).load("파일명",{키값:value값}): 은 서버측 파일을 load시 키에 해당하는 값을 전달하고
+							      그 결과값을 받아 선택자 영역에 불러올때
+							      
+	혹은
+	$(선택자).load("파일명",{키값:value값},function(data){}):서버로부터 전달 받은 처리 결과를 data에 담고 선택자 영역에 불러올때 사용
+	
+	
+
+	예 ]
+
+
+	--서버에 존재하는 serverSide.htm--
+	<div>
+		<h2>서버측 HTML샘플 페이지임</h2>
+
+	</div>
+
+	--jQuery Ajax메서드를 이용해서 클라이언트 스크립트 언어로 서버측 페이지 로딩
+
+	$(document).ready(function () {
+
+            $("button").click(function() {
+                 $('#htmlLoad').load("serverSide.htm",{'msg':'Hello'}); // 비동기적으로 페이지로드 
+                 alert("HTML페이지를 비동기적으로 로딩하기");//이 메시지 상자가 먼저 실행됨.
+		                   //비동기적으로 페이지를 로드 하기때문에 alert("HTML페이지를 비동기적으로 로딩하기")메서드가 먼저 실행 될 수 있음.
+            });
+        });    
+
+	<button>HTML페이지 로드</button>
+		<div id="htmlLoad">
+	</div>
+
+
+
+
+
+
+[$.getJSON()메서드]
+
+	-JSON파일를 읽을때
+
+	$.getJSON("JSON파일명",function(data){}));
+	-JSON파일의 데이타를 data에 받아서 $.each(data,function(index,entry){
+
+		
+		index와 entry를 이용해 데이타를 꺼내오거나 표시한다
+		index는 0부터 시작
+		즉 entry[키값] 혹은 index와 entry가 필요 없는 경우
+		this[키값]으로 데이타를 가져올 수 있다
+
+
+	});
+	메서드로 반복한다
+
+	여기서 파일은 JSON형태의 데이타가 저장된 파일임(확장자는 .js 혹은 .json)
+
+
+	--JsonData.json
+	  [
+		   {"name": "임수정","age": "20","주소":"서울"},
+		   {"name": "김하늘","age": "30","주소":"부산"},
+		   {"name": "최지우","age": "25","주소":"제주"}
+	  ]
+	--JsonData.json끝
+
+	$(document).ready(function () {
+            $("button").click(function () {
+				//json데이타를 읽어 data에 담는다.
+                $.getJSON("JsonData.json", function (data) {
+                    $('#pnlDisplay').empty(); // 내용 클리어 
+                    var table = "<table border='1'><tr><td>번호</td><td>이름</td><td>나이</td><td>주소</td></tr>";
+                    //each() 메서드를 사용해서 data가 있는만큼 반복
+                    $.each(data, function (index, entry) {
+                        table += '<tr>';
+                        table += '<td>' + index + '</td>';
+                        table += '<td>' + entry["name"] + '</td>';//entry["name"] 대신에 this["name"]도 가능
+						table += '<td>' + entry["age"] + '</td>';
+						table += '<td>' + entry["주소"] + '</td>';
+                      
+                        table += '</tr>';
+                    });
+                    table += "</table>";
+                    $('#pnlDisplay').append(table); 
+                });
+            });
+        });    
+
+
+
+
+
+	<button>JSON데이타 읽기</button>
+	<div id="pnlDisplay">
+	</div>
+
+
+
+[$.getScript()]
+
+	- 자바스크립트 파일을 동적으로 로드해을때
+
+	- 동적으로 원하는 위치에 해당 시점에서 자바스크립트 로드
+	  $.getScript("자바스크립트 파일");
+
+	
+	--JsData.js
+
+
+	// JSON 데이러
+	var JsonData = [
+	   {"name": "임수정","age": "20","주소":"서울"},
+	   {"name": "김하늘","age": "30","주소":"부산"},
+	   {"name": "최지우","age": "25","주소":"제주"}
+	];
+	var html = '';
+	html += "<table border='1'>"
+	html += "<tr><th>이름</th><th>나이</th><th>주소</th></tr>";
+	$.each(JsonData, function (index,entry) {
+	    html += "<tr>";
+	    html += "<td>" + this['name'] + "</td>";
+	    html += "<td>" + this['age'] + "</td>";
+	    html += "<td>" + entry['주소'] + "</td>";
+	    html += "</tr>";
+	});
+	html += "</table>";
+	$('#pnlDisplay').html(html); 
+	
+	--JsData.js 끝
+
+
+	$(document).ready(function () {
+            $("#btn").click(function () {
+                //  js 파일을 동적으로 로드해서 실행
+                $.getScript('JsData.js'); 
+            });
+        });    
+
+
+	  <button id="btn" >자바스크립트 불러오기</button>
+	<div id="pnlDisplay">
+	</div>
+
+
+
+[$.get()메서드]
+
+	
+	- XML데이타를 읽어 오거나 혹은 서버에 데이터를 전송 혹은 받을때 사용하는 메서드
+	
+	
+	1] XML데이타 읽어 오기
+
+		step 1. get()으로 xml파일을 읽어 data에 담는다
+
+			$.get("xml파일명",function(data){});
+
+		step 2. $(data).find("루트엘리먼트명").each(function(){
+		
+			${this}는 루트 엘리먼트를 의미
+			${this}.find("하위엘리먼트명")으로 하위 엘리먼트 찾고
+			attr()메서드로 속성을 찾는다
+		
+			});로  루트 엘리먼트를 찾는다
+
+
+
+		예]
+
+		--NameCard.xml
+
+		<?xml version="1.0" encoding="utf-8" ?>
+		<명함 >
+		   <성명  성="홍" 이름="길동">홍길동</성명>
+		   <직위>XML강사</직위>
+		   <TEL>02-1000-2000</TEL>
+		   <Mobile>010-1111-2222</Mobile>
+		   <e-mail>hwanyhee@naver.com</e-mail>
+		   <주소>서울 강남구 청담동 낭만플라자 스카리라운지</주소>
+		   <homepage>http://www.naver.com</homepage>
+		</명함>
+
+		---------------------------------
+
+		$(document).ready(function () {
+		    $("#btn").click(function () {
+			$.get('NameCard.xml', function (data) {
+			    $('#pnlDisplay').empty();
+						//find()메서드로 루트 엘리먼트를 찾는다
+			    $(data).find('명함').each(function () {                       
+				// 엘리먼트 특성(Attribute)을 읽어오기 
+				//${this}는 루트 엘리먼트를 의미
+				//find()메서드로 하위 엘리먼트를 찾고 attr()메서드로 속서을 찾는다
+				var html = "<div>" + $(this).find("성명").attr('이름') + "</div>";    
+				// 하위 엘리먼트의 text읽어오기
+				html += "<div>" + $(this).find("주소").text() + "</div>"; 
+				$('#pnlDisplay').append($(html));
+			    });
+			});
+		    });
+		});  
+		
+
+		 <button id="btn">XML데이타 읽어오기</button>
+		 <div id="pnlDisplay"></div>
+
+			
+
+
+	2] 서버에 데이타 전송(쿼리스트링) 및 결과 받기
+
+		-$.get("서버사이드 스크립트 언어",{키:값,키1:값1},콜백함수);
+		 
+		{키:값}은 서버측 파일에 전송할 쿼리 스트링(?키=값 의 형태)
+
+		콜백함수의 형태는 function(data){  }->여기서 data에 서버에서 응답한 결과가 저장됨
+
+
+		--printToday.jsp
+
+		<%@ page language="java" contentType="text/html; charset=EUC-KR"
+		    pageEncoding="UTF-8"
+		    import="java.util.Date,java.text.SimpleDateFormat"
+		    %>
+		<%
+			//한글처리
+			request.setCharacterEncoding("UTF-8");
+			//msg이름으로 넘어온값 받기
+			String msg = request.getParameter("msg");			
+			
+			String today = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) ;
+			//웹브라우저에 출력
+			out.println("<h2>서버에 전송한 데이타:"+msg+"</h2>");
+			out.println("<h2>오늘 날짜:"+today+"</h2>");
+
+
+
+		%>
+
+		--------------------------------------------------------------------------------------
+
+
+		 $(document).ready(function () {
+		    $('#btn').click(function () {
+			$.get(
+			    "printToday.jsp",          
+			    { 'msg': $(this).text() },          
+			    function (data) {           //콜백함수 : data에 서버측에서 전송한 결과 값 받음 즉 웹브라우저에 출력한 HTML처리 결과를 받음
+				$('#pnlDisplay').html(data);    
+			    }
+			); 
+		    });
+		}); 
+
+
+		 <button id="btn">GET방식으로 서버에 데이타 전송 및 결과 받아오기</button>
+		 <div id="pnlDisplay"></div>
+
+
+[$.post()메서드]
+
+	- 쿼리 스트링이 아닌 POST방식으로 서버에 데이타를 전송하고 받기
+	- $.get()과 같으나 메서드만 post로 바뀜 즉 $.get -> $.post로
+
+	$.post("서버사이드 스크립트 언어",{키:값,키1:값1},콜백함수);
+		 
+	{키:값}은 서버측 파일에 전송할 post식의 키=값의 쌍
+
+	 콜백함수의 형태는 function(data){  }->여기서 data에 서버에서 응답한 결과가 저장됨
+
+
+
+	 ※ load()메서드와 get()/post()메서드와의 차이점
+
+	    서버측의 처리결과를 비동기적으로 원하는 위치에 불러오는 기능은 동일하다
+	    단, 사용법이 다르다.
+
+	    $(선택자).load("파일명",{키값:value값},function(data){}) : 선택자 위치에 처리결과를 불러옴과 동시에 처리결과는 data에 담음.
+
+	    -$.get("서버사이드 스크립트 언어",{키:값,키1:값1},function(data){});
+	     혹은 
+	     $.post("서버사이드 스크립트 언어",{키:값,키1:값1},function(data){}); : 불러온 결과를 콜백함수의 data에 저장하고
+	                                                                            뿌려줄 위치를 쿨백함수내에서 구현한다.
+ 
+
+
+
+
+
+[$.ajax()메서드]
+
+	-가장 사용빈도가 높은 메서드로  jQuery Ajax 관련 메서드를  모두 이 메서드로 구현가능하다
+	 즉 HTML,JSON,XML데이타를 로드하거나 POST 및 GET방식으로 데이타를
+	 전송하거나 등등 이 이 메서드 하나로 가능하다
+
+	-매개변수중 url,type,data,dataType은 기본적으로 항상 사용하기 때문에
+	 $.ajaxSetup()메서드에 설정하면 생략가능하다
+
+	
+
+
+	$.ajax({인자1:값1,인자2:값2,.....})메서드의 인자들
+
+	url:서버측 페이지 url	
+	type:HTTP메서드, 기본값은GET, POST와GET 중선택
+	data:서버로 전송되는 데이터[JSON타입의 형식 ]
+	dataType:응답결과의 데이터형식(xml,html,json,script, text)
+	timeout:요청에대한 응답 제한시간(millisecond)
+	contentType:서버전송시의 content-type, application/x-wwwform-urlencoded기본
+	success:응답이 성공하는경우 호출되는 콜백함수(무명함수 또는 함수포인터)
+	error:에러 발생시 실행되는 콜백함수
+	complete:요청이 완료 되었을때 호출되는 콜백함수
+	asyn:false로 지정하면 동기 호출 전송. True(디폴트) 설정시 비동기호출
+
+
+	예]
+	   --JsData.js
+	   function MyAlert(str1,str2) {
+		alert(str1+str2);
+	   }
+	   -----------------------------------------------------------
+
+	    <script type="text/javascript">
+
+		//에러시 실행할 함수
+		function err() { alert('실패'); }
+
+		$(document).ready(
+		    function () {
+	
+			$.ajax({
+			    url: 'JsData.js',
+			    dataType: "script",
+			    type: "get",
+			    success: function (data) { MyAlert('Hello ','World'); },
+			    error: err
+
+
+			});
+
+
+			$('#btn').click(function () {
+			    $.ajax({
+				url: "printToday.jsp",
+				dataType: "html",
+				type: "get",
+				contentType:'text/html;charset:utf-8',
+				data: { msg: $(this).text() }, //서버에 데이타 전송
+				success:suc
+				//무명함수로 처리
+				/*
+				function (data) { //data라는 인자에 서버에서 보낸 결과값이 저장 됨
+
+				    $('#pnlDisplay').html(data);
+
+				}
+				*/
+
+
+
+			    });
+
+
+			});
+
+		    }
+
+
+		);
+
+		function suc(data){
+
+			$('#pnlDisplay').html(data);
+		}
+	    
+	    </script>
+	</head>
+	<body>
+
+	    <button id="btn">$.ajax()메서드 이용</button>
+	    <div id="pnlDisplay"></div>
+	</body>
+
+
+[$.ajaxSetup()]
+
+	-동일하게 반복되는 $.ajax()메서드의 인자를 $.ajaxSetup()에 설정하여 
+	 $.ajax()를 여러번 사용시 반복되는 인자 생략 가능 
+	 ($.ajax()메서드에서  url/type/data/dataType 이 네가지 속성은 기본적으로 사용)
+	-$.ajaxSetup()의 인자는 $.ajax()에서 사용하는 인자와 동일.
+
+
+	--JsonData.json
+	[  
+		{"name": "임수정","age": "20","주소":"서울"},
+		{"name": "김하늘","age": "30","주소":"부산"},
+		{"name": "최지우","age": "25","주소":"제주"}  
+	]
+
+	------------------------------------------------------
+	<style type="text/css">
+	    .yellow { background-color:Yellow; }
+	    .gray { background-color:gray; }
+	</style>
+	<script type="text/javascript">
+		 $(document).ready(function () {
+        	//$.ajax()에서 반복 사용하는 속성을 상단에 설정 후 $.ajax에서 상속받아 사용
+        	$.ajaxSetup({
+        		url: 'JsonData.json',				
+			    dataType: "json" 		         
+			});
+
+		$.ajax({
+					   
+			    
+			    success: function (data) {
+					
+			    	
+				$.each(data, function (index, entry) {
+					    $('#tbl2').append("<tr><td>" + entry.name + "</td><td>" + entry["age"] + "</td><td>"+entry["주소"]+"</td></tr>");					   
+
+				});
+			    },
+			    error:err
+
+
+		});
+
+		$.ajax({
+					   
+			    
+			   success: function (data) {	
+			    	
+			    	
+					$.each(data, function (index, entry) {
+					    $('#tbl2').append("<tr><td>" + entry.name+index + "</td><td>" + entry["age"] + "</td><td>"+entry["주소"]+"</td></tr>");
+					    
+
+
+					});
+			    },
+			    error:err
+
+
+			});
+
+
+		}); 
+        
+		function err(){alert("실패");}
+	    
+	    </script>
+	</head>
+	<body>
+	 <table id="tbl1" border="1"></table>
+	 <table id="tbl2" border="1"></table>
+	</body>
+
+
+=====================jQuery Utilities 관련 API=================================================
+
+[$.browser]
+
+	- 사용자의 브라우저 정보 제공
+	- version: 브라우저 버전(렌더링 버전임)
+	- msie: IE인 경우 true 아니면 false
+	- mozilla :Firefox인 경우 true
+	- safari : Safari인 경우 true
+	- opera :Opera인 경우 true
+
+	예]
+
+	$(document).ready(function () {
+		var result = "";
+
+		// $.browser의 모든 속성 출력
+		$.each($.browser, function (key, val) {
+		    result += key + ":" + val + "\n";
+		});
+
+		alert(result);
+
+		
+		if ($.browser.msie) {
+		    alert("IE");
+		}
+		else {
+		    alert("IE가 아님"); 
+		}
+	});
+
+
+
+[$.trim()]
+
+	- 양쪽 공백 제거 
+	  $.trim(문자열)
+
+
+	  $(document).ready(function () {
+		var msg = "  Hello World  ";
+		
+		alert("공백제거전:"+msg.length);
+		alert("A" + $.trim(msg) + "Z"); 
+		alert("공백 제거 후:"+jQuery.trim(msg).length);
+	}); 
+
+
+
+[$.noConflict()]
+
+
+	
+	- 다른 라이브러리(예:prototype.js등)와 jQuery사용시 $대신 jQuery키워드 사용.
+	  다른 라이브러리와 충돌을 피하기 위해서 사용
+
+	  즉 스크립트 태그문 상단에 $.noConflict();를 지정하게 되면
+	  $(document).ready()이런식으로 사용 못하고 jQuery(document).ready();식으로
+	  사용해야 함. 
+
+		
+
+		<script type="text/javascript">
+
+		// 현재 페이지에서는 $대신에 jQuery를 사용
+		// $사용시 에러
+		$.noConflict();
+		
+		jQuery(document).ready(function () {  //$(document).ready시 에러[x]
+			    alert($);//$가 정의 되지 않았다고 출력 됨(undefined)
+			             //$.noConflict() 주석시 jQuery에서 정의된 $(팩토리 함수)에 대한 정의 출력 됨
+		            alert("$대신 jQuery사용"); 
+		});
+		
+		</script>
+		
+
+	※ 기존 코드가 $를 사용한다면 그대로 유지하기 위한 방법
+
+	   - ready(콜백함수)의 콜백함수 인자에 $를 인자로 전달한다.
+		<script type="text/javascript">
+			$.noConflict();
+			jQuery(document).ready(function ($) {
+				alert($);//jQuery에서 정의된 $(팩토리 함수)에 대한 정의 출력 됨
+				$('div').append("<h2>$방식 사용</h2>"); //[o]
+				jQuery('div').append("<h2>jQuery방식 사용</h2>");//[o]
+			});       
+		</script>
+
+
+		<div></div>
+
+
+======================jQuery UI관련 API==================================================
+	
+	- jQuery 엔진에 포함되어 있지 않고 별도의 라이브러리로 제공된다
+	- http://jquery.com -> 상단 Documentation ->좌측 jQuery UI -> 	http://jqueryui.com/
+	  로 이동해서
+	  최신 버전의 라이브러리 다운로드(2012.9월 현재:jquery-ui-1.8.23.custom.zip)
+
+
+	- UI관련 구현 단계
+
+	STEP1] jQuery UI관련 라이브러리를 위에서 다운받아 압축을 푼다
+	STEP2] UI관련 js파일을 소스에 SCRIPT로 추가한다
+	       <script src="/script/jquery-ui-1.8.23.custom.min.js" type="text/javascript></script>
+
+	STEP3] 압축을 푼 폴더 중 jquery-ui-1.버전.custom\development-bundle\demos 를 참조해서
+	       구현하거나
+	       혹은 http://jqueryui.com/사이트의 상단 메뉴 Demos&Documentation메뉴를 클릭 해서 참조한다.
+
+	
+
+
+====================jQuery plugin 다운로드 및 적용======================================
+
+	http://jquery.com의 Top메뉴중 plugins에서 검색 및 다운로드
+
+		-rotate/carousel/autocomplete/uploadify/accordion등 검색
+	
+		-파일 업로드 plugin:https://fineuploader.com/demos.html
+
+		
+	
+
+
+
+
+

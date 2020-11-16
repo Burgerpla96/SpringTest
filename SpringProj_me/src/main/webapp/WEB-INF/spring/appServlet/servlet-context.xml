@@ -235,7 +235,7 @@
 	-->
 	<!-- context접두어 사용(resource 파일이 여러개인 경우   ,(콤마)로 구분해서 나열) -->
 	  
-	<context:property-placeholder location="classpath:resc.properties,classpath:sub/resc.properties"/>
+	<context:property-placeholder location="classpath:resc.properties,classpath:sub/resc.properties, classpath:com/kosmo/springapp/onememo/resource/onememo.properties"/>
 	<!-- 컨트롤러에 주입할 커맨드 객체(DTO계열) 빈 등록-세터 인젝션을 통해 초기화 -->
 	<beans:bean id="command" p:name="${name}" class="com.kosmo.springapp.basic.resource.UserCommand">
 		<beans:property name="user" value="${user}"/>

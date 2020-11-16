@@ -1,11 +1,11 @@
 package com.kosmo.springapp.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 public class Test_201111Test {
-
+	
 	@Test
 	public void testCommonUtilities() {
 		fail("Not yet implemented");

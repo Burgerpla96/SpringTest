@@ -22,4 +22,16 @@
 		ORDER BY cno DESC 
 	</select>
 		
+	<!-- map에 키값으로 저장되어 넘어 온것 대로 #{}에 넣기 -->	
+	<update id="commentUpdate" parameterType="java.util.Map">
+		UPDATE memoComment SET lineComment = #{linecomment} WHERE cno=#{cno}
+	</update>
+		
+	<delete id="commentDelete" parameterType="java.util.Map">
+		DELETE memoComment WHERE cno=#{cno}
+	</delete>	
+	
+	
+	
+	
 </mapper>

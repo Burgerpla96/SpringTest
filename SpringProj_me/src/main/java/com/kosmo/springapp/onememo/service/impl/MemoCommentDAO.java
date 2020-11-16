@@ -30,14 +30,12 @@ public class MemoCommentDAO  implements MemoCommentService{
 
 	@Override
 	public int delete(Map map) {
-		// TODO Auto-generated method stub
-		return 0;
+		return sqlMapper.delete("commentDelete",map);
 	}
 
 	@Override
 	public int update(Map map) {
-		// TODO Auto-generated method stub
-		return 0;
+		return sqlMapper.update("commentUpdate",map);
 	}
 
 }

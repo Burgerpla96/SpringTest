@@ -17,6 +17,7 @@
 		<result property="postDate" column="postDate"/>
 		<result property="id" column="id"/>
 		<result property="name" column="name"/><!-- 실제 테이블에는 없어도 join select결과의  column결과를 맵핑-->
+		<result property="commentCount" column="commentCount"/> 
 	</resultMap>
 	
 	
@@ -38,25 +39,42 @@
 	</select>
 	
 	<select id="memoSelectList" parameterType="java.util.Map" resultType="oneMemoDTO">
-		SELECT o.*, m.name FROM member m JOIN onememo o ON m.id = o.id
-		ORDER BY no DESC
+		SELECT * FROM 
+		(SELECT T.*,ROWNUM R FROM  
+		(SELECT o.*, m.name,(SELECT COUNT(*) FROM memoComment WHERE no=o.no) as commentCount  
+		FROM member m JOIN onememo o ON m.id = o.id
+		<if test="searchColumn != null"><!-- EL문에서 ${} 뺀 것 처럼 쓰기 -->
+			WHERE ${searchColumn} LIKE '%' || #{searchWord} || '%'
+		</if>
+		ORDER BY no DESC) T)
+		WHERE R BETWEEN #{start} AND #{end}
 	</select>
 	
 	<insert id="memoInsert" parameterType="java.util.Map">
 		INSERT INTO onememo(no,title,content,id) 
 		VALUES(SEQ_ONEMEMO.nextval,#{title},#{content},#{id})		
 	</insert>
+
+	
+	
+	<select id="memoGetTotalRecord" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) FROM onememo o JOIN member m ON o.id = m.id
+		<if test="searchColumn != null"><!-- EL문에서 ${} 뺀 것 처럼 쓰기 -->
+			WHERE ${searchColumn} LIKE '%' || #{searchWord} || '%'
+		</if>
+	</select>
+	
+	
 	<!-- resultMap 으로 위에서 처리한 것 이용 -->
 	<!-- 질문) resultMap과 resultType으로 한 것의 차이.. -->
 	<!-- 
-	resultMap="oneMemoDTOResult" 
-	resultType="com.kosmo.springapp.onememo.service.OneMemoDTO" 
-	(configuration.xml에서 typeAliases tag로 별칭한)
-	resultType="oneMemoDTO" 까지 모두 된다.
+	1. resultMap="oneMemoDTOResult" 
+	2. resultType="com.kosmo.springapp.onememo.service.OneMemoDTO" 
+		(configuration.xml에서 typeAliases tag로 별칭한)
+	3. resultType="oneMemoDTO" 까지 모두 된다.
 	모두 된다.
 	-->
 	<!-- resultMap을 하면 컬럼에 별칭을 해서 bean 객체의 속성과 컬럼명이 달라도 직접 매핑을 해서 괜찮다.  -->
-	
 	<select id="memoSelectOne" parameterType="java.util.Map" resultMap="oneMemoDTOResult" >
 		SELECT o.*, m.name FROM member m JOIN onememo o ON m.id = o.id 
 		WHERE no = #{no}
@@ -69,7 +87,7 @@
 	<delete id="memoDelete" parameterType="java.util.Map" >
 		DELETE onememo WHERE no=#{no}
 	</delete>
-
+	
 	
 
 

@@ -154,6 +154,8 @@
 					//입력댓글 클리어 및 포커스 주기
 					$('#title').val('');
 					$('#title').focus();
+					//글 수정수 등록 버튼으로 다시 교체하기
+					if($('#submit').val()=='수정') $('#submit').val('등록');
 				}
 				
 			});
@@ -208,14 +210,46 @@
 			});
 			comments += "</table>";
 			$('#comments').html(comments);
+			
+			
+			//반드시 showComments_() 함수안에 
+			//코멘트(댓글) 제목 클릭시 코멘트 수정처리를 위한 UI 변경
+			$(".commentEdit").click(function(){
+				console.log('클릭한 댓글의 키값(CNO): ',$(this).attr('title'));
+				//클릭한 제목으로 텍스트 박스 값 설정
+				$('#title').val($(this).html());
+				//버튼은 등록에서 수정으로 변경될 수 있게 하기
+				$('#submit').val('수정')
+				//cno 설정
+				$('input[name=cno]').val($(this).attr('title'));
+				
+			});
+			
+			//코멘트 삭제 처리
+			$(".commentDelete").click(function(){
+				$.ajax({
+					url:"<c:url value='/OneMemo/Comment/Delete.do'/>", 
+					data:{"cno":$(this).attr('title'),"_csrf":"${_csrf.token}"},
+					dataType:'text',
+					type:'post',
+					success:function(){showComments();}
+				});
+			});
+			
+			
+			
+			
 		}//////////////showComments_
 	
 	
+		
+		
+		
 		function isDelete(){
 			if(confirm("정말로 삭제 하시겠습니까?")){
-				location.replace("<c:url value="/OneMemo/BBS/Delete.do?no=${record.no}"/>");
+				location.replace("<c:url value='/OneMemo/BBS/Delete.do?no=${record.no}'/>");
 			}
-		}
+		}////////////////isDelete
 	
 	</script>
 	

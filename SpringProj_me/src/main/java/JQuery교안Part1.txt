@@ -1,0 +1,1560 @@
+[ jQuery Core관련 API 교안]
+
+[jQuery란]
+
+	-오픈소스 자바스크립트 라이브러리
+	-CSS에서 사용되는 선택기/선택자(Selector) 개념으로 DOM의 멤버에접근		
+	-웹에서 자주 사용하는 기능의 간편화
+	-메서드 체인방식에 따른 효율적인 코딩가능
+	-크로스 브라우저 지원
+
+
+	-공식사이트: jQuery소스및문서제공
+	 http://jquery.com
+	  
+		-설치
+			웹사이트에 주로/js/ 폴더에 최신 버전을 다운로드
+			-배포용
+				jquery-1.버전.min.js : 실행 가능한 최소크기의 버전
+			-개발용
+				jquery-1.버전-vsdoc.js : Visual Studio 인텔리센스지원
+
+			※ 2012년 현재 최신 버전은 1.8.1
+
+	-jQueryUI 사이트: 화려한 UI관련 플러그인 제공
+
+	http://jqueryui.com/
+
+
+
+[jQuery의 진입점]
+$(document).ready 는 <body>에 있는 모든 요소들이 전부 메모리에 올라왔다.(준비가 되었다. 라는 의미)
+	
+	[1]
+	$(document).ready(
+		
+		function(){//무명 메서드(이름이 없는 메서드)
+
+			//여기서 코딩-자바스크립트와 jQuery혼합
+		}
+	);
+
+	[2]
+	$().ready(
+		
+		function(){//무명 메서드
+
+			//여기서 코딩
+		}
+	);
+	
+	[3]
+	$(
+		function(){//무명 메서드
+
+			//여기서 코딩
+		}
+	);
+
+
+	
+	$() -- 팩토리 함수 -- DOM 객체를 가져오기위한 함수
+	※ $()팩토리 함수는 문서개체를 가져올때 사용
+	   즉 $(선택자).메서드()형식으로 선택자에 해당하는 jQuery객체를 가져와 메서드를 적용시킨다.
+	   선택자는 " "으로 감써가나 ''로 감싸준다.(String형이 와야함으로)
+
+	   $()대신에 jQuery()도 무방 즉 $대신에 jQuery도 가능 -- 다른 라이브러리와 충돌 피하기 위함
+ 
+
+	  ※선택자(Selector): 
+		    태그명,
+		    id속성에 지정한 값,
+		    class속성에 지정한 값
+		    #id명 .class명
+
+			태그선택자: 태그명
+			아이디선택자: #아이디명
+			클래스선택자: .클래스명
+			하위선택자 : 선택자 하위선택자(스페이바로 구분)
+			자식선택자 : 선택자 > 자식선택자(> 로 구분)
+			다중선택자 : 선택자1,선택자2,선택자3 (콤마로 구분)
+			
+
+	   ※ 선택자에 정규표현식 적용을 위한 []사용
+	      $("선택자[속성명]") : 해당 속성명을 가지는 모든 선택자 즉 jQuery객체를 가져옴
+	      예]
+		  $("a[target]"):target속성을 가지는 모든 a태그를 자져옴
+
+	
+
+		$("선택자[속성명*='문자열']") :문자열이 포함된 모든 선택자 가져오기
+		$("선택자[속성명$='문자열']"): 문자열로 끝나는 모든 선택자 가져오기
+		$("선택자[속성명^='문자열']"): 문자열로 시작하는 모든 선택자 가져오기
+		$("선택자[속성명 ='문자열']"): 문자열과 일치하는 모든 선택자 가져오기
+
+	   예]
+
+		<script type="text/javascript">
+		$(document).ready(
+		    function () {
+
+
+			$("a[href*='naver']").click(function () { alert('네이버'); });
+			$("a[href$='.net']").click(function () { alert('다음'); });
+			$("a[href^='www']").click(function () { alert('싸이월드'); });
+
+		    }
+		)
+
+		</script>
+		
+		<a href="http://www.naver.com">네이버</a><br/>
+		<a href="http://www.daum.net">다음</a><br/>
+		<a href="www.cyworld.com">싸이월드</a><br/>
+
+	    ※기타 선택자 표현
+	    :contains("문자열") : 해당 문자열을 포함하는 DOM객체 
+	    예]
+	    $('li:contains("문자열")').css("color", "red"); li태그의 시작태그와 종료태그 사이에 '문자열'이 포함된 jQuery객체를
+							    글꼴 색상을 red로    
+							    문자열은 대소문자 구분함.
+
+	    :even 혹은 :odd  :짝수번째 혹은 홀수번째 DOM객체 (인덱스는 0부터 시작)
+	    예]
+	    $('ul li:even').css("color", "blue"); ul태그의 하위 태그인 li태그중 짝수번째의 글꼴 색상을 blue로
+						  홀수번째는 odd
+
+	    :first-child 혹은 :last-child 첫번째 자식 요소혹은 마지막번째 자식요소 객체 얻기 
+	     자식태그:first-child
+	     예]
+
+
+	    $('li:first-child').css("color", "green");li태그 중 첫번째 태그의 글꼴 색상을 green으로
+
+		<ul>
+			<li>스포츠</li>
+			<li>경제</li>
+			<li>정치</li>
+		</ul>
+
+	    :eq(인덱스) : 인덱스에 해당하는 선택자 반환(인덱스는 0부터 시작)
+
+	    예]
+
+		 $('li:eq(1)').css("color", "green");전체 li태그 중 두번째 태그의 글꼴 색상을 green으로(경제만)
+
+		$("ul.idol li:eq(1)").css("color","red"); ul태그중 idol클래스명을 가진 ul태그의 li중 1번째 li(아이유만 red로)
+
+		<ul>
+			<li>스포츠</li>
+			<li>경제</li>
+			<li>정치</li>
+		</ul>
+		<ul class="idol">
+			<li>수지</li>
+			<li>아이유</li>
+			<li>보라</li>
+		</ul>
+		
+
+
+	※ 메서드 체인
+
+		:메서드를 체인처럼 .(dot)로 계속 연결해서 사용한다는 의미
+
+		예]
+
+		
+		$(document).ready(function () {
+		    $('li:eq("1")') // li 중 두번째 li
+		    .siblings() // 두번째 li의 형제 노드
+		    .css("color","red") // 글 색상을 red로
+		    .parent() // 부모로 이동
+		    .find('li:contains("스포츠")') // '스포츠;를 포함하는 li를 찾아서
+		    .css('color','yellow'); //글 색상을 yellow로
+		});
+
+
+		<ul>
+			<li>스포츠</li>  <!-- yellow-->
+			<li>경제</li> <!-- red-->
+			<li>정치</li> <!-- red-->
+		</ul>
+	   
+
+
+[length 속성 및 size()메서드]
+
+	- 해당 jQuery객체의 개수 알아내기  
+	$(선택자).length 혹은 $(선택자).size()
+
+	예]
+	<script type="text/javascript">
+		$(document).ready(
+		    function () {
+			alert($('div').length);
+			alert($("div").size());
+		    }
+		);
+	</script>
+
+	<div>div1</div>
+
+	<div>div2</div>
+
+	<div>div3</div>
+
+[get(인덱스)메서드]
+
+	jQuery로 DOM객체를 얻어오는 메서드
+	$(선택자).get(인덱스)는 자바스크립트로 문서개체를 얻어오는 document.getElementById()와 같다 
+        즉 자바스크립트 방식과 혼용하려면 get()메서드 이용 
+
+
+	예]
+	$(document).ready(
+
+		function {
+
+			alert($('#naver').get(0).href);
+
+			//는
+			alert(document.getElementById("naver").href); //와 같다
+		}
+
+	);
+	
+
+	<a href="http://www.naver.com/" id="naver">네이버</a>
+
+
+[bind()메서드로 이벤트 연결]
+
+	사용법: bind("이벤트명",function(){});
+
+    	<script src="js/jquery-1.8.1.min.js" type="text/javascript"></script>
+    	<script type="text/javascript">
+        	$(document).ready(
+            		function () {
+
+                		$('#div').bind("click", function () {
+                    			alert($(this).text());
+                		});
+				//메서드 체인으로 mouseover와 mouseout이벤트를 bind
+               			$('#div')
+				.bind('mouseover', function () {
+
+                    			// $(this).get(0).style.backgroundColor = "red";
+                    			// $('#div').get(0).style.backgroundColor = "red";
+                    			//순수자바스크립트
+                    			document.getElementById("div").style.backgroundColor = "red";
+                		})
+                		.bind('mouseout', function () {
+
+                     			$(this).get(0).style.backgroundColor = "";
+					alert(this.id);
+                    			//$(this)는 이벤트 핸들러 안에서 자기 자신을 의미 즉 div라는 id를 가진 jQuery객체를 의미
+					//this.id는 이벤트 핸들러 안에서 자기자신의 id값을 나타냄.
+					
+                   
+                		});
+
+            		}
+
+
+        	);
+    
+    </script>
+	
+    <div id="div">
+        클릭
+    </div>
+
+
+    ※this.id의 추가 소스 예]
+	$(document).ready(
+            		function () {
+	
+				$("div").bind("click",function(){
+					if(this.id=="naver") location.href="http://www.naver.com";
+					else if(this.id=="daum") location.href="http://www.daum.net";
+					else location.href="http://www.nate.com";
+			
+				});
+
+				
+			});
+
+	<div>
+        	<div id="naver">네이버</div>
+        	<div id="daum">다음</div>
+        	<div id="nate" >네이트</div>
+    	</div>
+	
+
+
+
+[unbind()]
+	-이벤트 해제하는 메서드
+
+	unbind("이벤트명");
+		$(document).ready(function () {
+
+			$('#btnClick').click(function () { alert('버튼 클릭됨')});
+			$('#btnEventClear').bind('click',function(){
+				//이벤트 해제
+			    $('#btnClick').unbind('click');
+			
+			});
+
+		});
+			<input type="button" id="btnClick" value="버튼"  />
+			<input type="button" id="btnEventClear" value="이벤트 해제" />  
+
+
+[trigger()]
+	-사용자 반응이 아닌 자동으로 이벤트를 호출하고자 할때(트리거 하고자 할때)
+	trigger("이벤트명");
+
+	$(document).ready(function () {
+		
+		//사용자 클릭시 이벤트 호출
+		$('#btnClick').bind("click", function () {
+				    alert("버튼 클릭");
+
+				});
+
+		 //자동으로 click 이벤트 호출 즉  페이지 로드시  버튼 클릭 이벤트를 트리거
+		 $('#btnClick').trigger("click");
+	
+	});
+
+	 <button id="btnClick">버튼</button>
+
+
+[live()/die()]
+
+	live():동적으로 추가 된 모든 요소에도 이벤트 부여할 수 있는 메서드
+	       그러나 bind()메서드는 기존 DOM 요소에 이벤트를 부여 할 수 있는 메서드임
+	       즉 동적으로 추가된 요소에는 이벤트를 등록할 수 없음.
+
+	die("이벤트명'):live()메서드로 등록된 이벤트를 해제할때
+
+	    <style type="text/css">
+		div { border:1px solid red; margin: 10px; width:200px;height:50px }
+	     </style>
+	  
+	  //여기서 e는 이벤트 객체 target은 이벤트가 발생한 이벤트 소스
+          // $("div").bind("click", function (e) {
+          //      alert(e.target.innerHTML);
+          //      $(this).after("<div>추가된 div 영역!!!</div>");
+          //  });
+
+           
+            $("div").live("click", function (e) {
+                alert(e.target.innerHTML);
+                $("<div>추가된 div 영역!!!</div>").insertAfter(this);
+            });
+
+	    $('#btnEventClear').bind('click',function(){
+				//이벤트 해제
+			    $('div').die('click');
+			
+			});
+
+
+	    <div >클릭 div</div>
+
+	    <input type="button" id="btnEventClear" value="이벤트 해제" /> 
+
+
+[click()메서드]
+
+	bind("click",function(){})에서 click이라는 이벤트는 빈번하게 일어나서 bind의 click과 같은 역할을 하는 메서드를 별도로 click이라는
+	이벤트로 만들어 놓음(그러나 mouseover나 mouseout이벤트는 메서드가 없음으로
+	bind메서드 이용해야 함-그러나 1.7 이후버전에는 추가 되었음)
+
+	사용예 ] $(선택자).click(function(){코드 작성});
+
+
+[filter() 메서드]
+
+	- 선택된 jQuery객체를 필터링 하기 위한 메서드
+
+	예]
+	<style type="text/css">
+		.bg{ background-color:yellow}
+		.border{border:1px red solid}
+	</style>
+	$(document).ready(
+            function () {
+
+	//a 태그요소의 백그라운드를  노란색으로 그리고 그중에서 href속성에 
+	//naver가 포함된 요소만 필터링해서 테두리 주기	
+	//-XPATH형식에서 ''나 ""는 생략가능 즉 a[href*=naver]
+				$('a').addClass('bg')//모든 a태그 요소에 대해
+				.filter("[href*='naver']").addClass('border') //그중에서 href에 naver가 포함된 요소 필터링
+				.end() //바로 이전 요소로 즉 href속성에 naver가 포함된 요소가 선택되기 바로 이전 요소로 이동하는 메서드
+				.filter("[href$='net']").removeClass("bg");//href속성에 net으로 끝나는 a태그 요소 필터링
+	}
+
+
+        );
+
+	<a href="www.naver.com">네이버</a>
+	<a href="www.nate.com">네이트</a>
+	<a href="www.daum.net">다음</a>
+
+
+[slice()메서드]
+
+	-jQuery객체중 특정 인덱스 위치의 요소를 가져오는 메서드
+	-slice(시작 인덱스,끝인덱스) : 인덱스는 0부터 시작하고 끝인덱스는 포함안됨 즉 끝인덱스 -1
+	 혹은 slice(-n) 은 오른쪽에서 n개의 요소 선택
+
+
+	예]
+	<style type="text/css">
+		
+		.border{border:1px red solid}
+	</style>
+	$(document).ready(
+            function () {
+
+		$('a').slice(0,2).addClass('border')//모든 a태그 요소중 1번째와 2번째만 즉 네이버와 네이트
+				
+	}
+
+
+        );
+
+	<a href="www.naver.com">네이버</a>
+	<a href="www.nate.com">네이트</a>
+	<a href="www.daum.net">다음</a>
+
+
+
+
+[Toggle()메서드)]
+
+	-토글기능을 주고자 할때 사용하는 메서드
+	-이벤트 소스에 Toggle메서드 등록 toggle(fn1,fn2)
+	-이벤트가 발생할때 마다 fn1과 fn2가 서로 토글됨
+
+	<style type="text/css">
+        	.toggle
+        	{
+            		display:none;
+        	}
+    
+    	</style>
+    	<script type="text/javascript">
+        	$(document).ready(function () {
+
+			var txt = $('#txt').get(0);
+            		$('#btn').toggle(
+			function () {txt.size=50;;$('#div').addClass('toggle');}, 
+			function () {txt.size=20;$('#div').removeClass('toggle');}
+			);
+
+        	});
+    
+    </script>
+
+    <input type="button" id="btn" value="버튼" />
+    <div style="background-color:Yellow" id="div">
+        토글
+    </div>
+    <input type="text" id="txt" size="20"/>
+
+
+[toggleClass()메서드]
+
+	-스타일을 토글시킬때 사용하는 메서드
+	-이벤트 소스(버튼)가 아니라 click메서드의 인자인 무명메서드에 
+	 해당 jQuery객체에 toggleClass()메서드 적용 
+	- 즉 toggle()메서드와 다른점은 토글 시키고자하는 클래스만 적용하고자할때 사용함
+	  단,toggle()메서드는 클래스뿐만 아니라 다른 추가적인 기능도 토글시키고자 할때
+	
+
+	<style type="text/css">
+        	.toggle
+        	{
+            		display:none;
+        	}
+    
+    	</style>
+	 <script type="text/javascript">
+		$(document).ready(function () {
+
+
+			$('#btn').click(function () {
+
+			    $('#div').toggleClass('toggle');
+
+			});
+
+		    }
+
+		);
+	    
+	    </script>
+
+	    <input type="button" id="btn" value="버튼" />
+	    <div style="background-color:Yellow" id="div">
+		토글 기능
+	    </div>
+
+[hover()메서드]
+
+	-하나의 메서드로 마우스 오버와 마우스 아웃 이벤트를 처리하기위한 메서드
+	-hover(fn1,fn2);fn1과 fn2가 번갈아 가면서 작용 됨
+
+	<style type="text/css">
+	    .hover
+	    {
+		background-color:Yellow;
+		cursor:hand;
+	    }
+	    
+	    </style>
+	    <script src="js/jquery-1.8.1.min.js" type="text/javascript"></script>
+	    <script type="text/javascript">
+		$(document).ready(function () {
+		    $('table tr:gt(0)').hover(//제목 표시줄은 적용되지 않도록(tr:gt(0))
+			    function () {$(this).addClass('hover');},
+			    function () {$(this).removeClass('hover');}
+		    );
+
+
+		});
+	    </script>
+
+	    <table border="1">
+		    <tr><th>번호</th><th>제목</th><th>작성자</th><th>조회수</th></tr>
+		    <tr><td>1</td><td>제목1</td><td>홍길동</td><td>19</td></tr>
+		    <tr><td>2</td><td>제목2</td><td>임수정</td><td>399</td></tr>
+	    </table>
+
+[one메서드]
+	
+	-특정 이벤트를 딱 한번만 실행시키고자 할때 이와는 달리 bind()나 click()메서드는 계속 실행됨
+	 사용법은 bind()와 같음 즉 one("이벤트명",function(){});
+
+	  <script>
+		$(document).ready(
+		    function () {
+		       
+			$("#btn").one('click', function () {
+			    alert('계속 버튼을 눌러도 한번만 경고창이 뜸');
+			});
+
+		    }
+
+
+		);
+	    </script>
+
+	    <input type="button" id="btn" value="버튼" />
+
+[css메서드]
+	
+	-css('스타일속성명','속성값') 혹은 JSON타입으로 여러 속성 지정 가능 즉 css({'속성명1':'값1',"속성명2":"값2",속성명3:"값3"})설정
+	 JSON형식에서는 속성명에는 " 나 ' 생략 가능 그러나 속성값는 반드시 ' 나 "으로 감싸줘라
+	-css('속성명');->속성명에 설정된 값을 반환
+	-속성명은 css속성명 혹은 자바스크립트식 표현으로 지정
+	 자바스크립트식 표현은  - 생략하고 그다음 문자는 대문자로 
+	
+	예1]
+		$(document).ready(function () {
+			$('div').each(function (index){
+				//$(this).css({'width':"100px",height:"100px","border":"1px red solid"}); 혹은
+				 $(this).css("border", "1px red solid")
+					.css('width',"100px")
+					.css('height',"100px");
+			)};
+
+		});
+
+
+		<div> div1</div>
+		<div> div2</div>
+		<div> div3</div>	
+
+	예2]font-size(css속성) =>fontSize(자바스크립트식 표현)
+
+		$(document).ready(function () {
+
+		    $('button').click(function () {//button 두개의 태그에 click()메서드 동시 적용
+
+			var $content = $('div#content');//jQuery객체 저장시 변수명앞에 $표시
+			var ftsize = $content.css('fontSize');//fontSize속성에 해당하는 값 읽어 오기 =>12px
+			var num = parseInt(ftsize);//float형으로 변환 12px->12
+			var unit = ftsize.slice(-2);//오른쪽에서 2개의 문자열 추출 여기서 slice는 jQuery메서드가 아닌 자바스크립트의 문자열 관련 메서드
+			                            //즉 단위를 가져온다->px
+
+			if (this.id == "Big") num *= 1.5;
+			else num /= 1.5;
+
+			$content.css("fontSize", num + unit);
+
+		    });
+
+
+
+		});
+	    
+
+
+	    <button id="Big">늘이기</button>
+	    <button>줄이기</button>
+	    <div id="content">Hello World</div>
+
+
+[next(),prev()]
+
+	-DOM 요소의 다음 이전으로 이동시키는 함수
+	next():현재 jQuery객체의 다음 요소를 반환
+	prev():현재 jQuery객체의 이전 요소를 반환
+
+	$(document).ready(function () {
+			
+            $('button#next').click(function () {
+				
+				$('li.third').prev().css("backgroundColor","white");
+				$('li.third').next().css('background-color', 'red');   
+               
+				
+            });
+
+			$('button#prev').click(function () {
+				
+				$('li.third').prev().css('background-color', 'yellow');
+				$('li.third').next().css("backgroundColor","white");
+				
+				
+            });
+
+			var i=0;
+			var size=$('li').length;
+			 
+			 $('button#Continue').click(function () {
+				
+				$('li').eq(i).prev().css('background-color', 'white');
+				$('li').eq(i).css('background-color', 'yellow');
+				if(i==0)
+					$('li').eq(size-1).css('background-color', 'white');
+				
+		
+				if(size-1==i) i=0;
+				else i++;
+
+				
+				
+			 });
+
+
+
+        });
+
+
+	<button id="next">jQuery의 다음 요소 얻어오기</button>
+	<button id="prev">jQuery의 이전 요소 얻어오기</button>
+	<button id="Continue">계속 배경색 바꾸기</button>
+
+	<ul>
+		<li>자바</li>
+		<li>JSP</li>
+		<li class="third">jQuery</li>
+		<li>Spring</li>
+	</ul>
+
+[width(),height()]
+
+	-요소 영역의 width,height구하기
+	-웹브라우저를 줄이면 요소가 줄어든 만큼 width와 height크기도 값이 줄어 든다.
+	$(document).ready(function () {
+		alert("width"+$('#div').width() + ", height=" + $('#div').height());
+	});
+	<div id="div">
+		div 영역1
+	</div>
+	
+
+
+[outerWidth(),outerHeight()]
+	-margin을 포함함 영역의 width,height구하는 메서드
+	-true인 경우 마진값 포함
+
+	 $('#btnSize').click(function () {
+			//마진값 포함하지 않음
+			    alert($('#div').outerWidth());//좌우padding(20px)+테두리(2px)+width(100px)=>122px 
+			 //마진값 포함 : 좌우 margin(20px)+좌우padding(20px)+테두리(2px)+width(100px)=>142px 
+			    alert($('#div').outerWidth(true));
+
+			});
+
+	<div id="div" style="border:1px red solid;margin:10px;width:100px;height:100px;padding:10px;">
+		div 영역1
+	</div>
+	
+
+	<button id="btnSize">사이즈 구하기</button>
+
+
+[show(),hide()]
+	
+	-요소 보이기 /안보이기
+	-인자값 생략 가능
+	 show('slow'): 인자값으로는 숫자(1000분의 1초 단위),slow,normal(디폴트),fast
+	 hide()도 같음
+
+
+	예1]
+	$(document).ready(
+		    function () {
+			$('.content').show();
+			$('#more').hide();
+
+			$('.btn').click(function () {
+			    $('#more').show('slow');
+			    $(this).hide('fast');
+
+			});
+
+
+		    }
+
+
+		);
+
+
+	<div class="content">내용</div>
+	<div id="more"> 
+		<p>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		  자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 자세한 내용 <br/>
+		</p>
+	
+	
+	</div>
+	<div class="btn" style="border:1px red solid;width:100px; height:20px;background-color:yellow">내용 더 보기</div>
+	
+
+	예2]
+
+	$(document).ready(function () {
+          
+            $('img').mouseover(function () {
+                $("#showImage").show(); 
+                var src = ""; 
+                src = $(this).attr("src");                
+                src = "<img src='" + src + "' />"; 
+                $("#showImage").html(src); 
+            });
+            
+            $('img').mouseout(function () {
+                $("#showImage").hide(); 
+            });
+        });
+
+
+	<img src="a.jpg" />
+	<img src="b.jpg" />
+	<img src="c.jpg" />    
+	<div id="showImage" 
+		style="border:1px solid red;width:200px;height:200px;">        
+	 </div>
+
+
+[slideDown(),slideUp()]
+
+	-해당 요소를 슬라이드처럼 아래로 혹은 위로 슬라이드 시키는 메서드
+	-slideDown("속도인자값"[,function(){}])
+	-인자값으로는 숫자(1000분의 1초 단위),slow,normal(디폴트),fast
+
+
+
+	$(document).ready(function () {
+            //backgroundColor도 가능(자바스크립트식 표현)
+			
+            $('div.title').css('background-color', 'yellow')
+            .toggle(function () {
+                $(this).next().slideDown('slow');
+
+            }, function () {
+
+                $(this).next().slideUp('slow');
+            });
+
+
+        });
+
+	
+	    <div class="title">제목1</div>
+	    <div style="display:none;">제목1의 내용입니다</div>
+		<div class="title">제목2</div>
+	    <div style="display:none;">제목2 내용입니다</div>
+		<div class="title">제목3</div>
+	    <div style="display:none;">제목3 내용 입니다</div>
+
+
+[slideToggle()]
+	
+	-slideUp()/slideDown()동시 처리
+	-인자값으로는 숫자(1000분의 1초 단위),slow,normal(디폴트),fast
+	$(document).ready(function () {
+
+		//배경색 변경
+		$('div.title').css('background-color', 'yellow');
+		
+		//이벤트 처리
+		$('div.title')
+		.click(function (e) {
+
+			    $(this).next().slideToggle('slow');
+
+			});
+		});
+
+
+	   <div class="title">제목1</div>
+	    <div style="display:none;" >제목1의 내용입니다</div>
+		<div class="title">제목2</div>
+	    <div style="display:none;" >제목2 내용입니다</div>
+		<div class="title">제목3</div>
+	    <div style="display:none;" >제목3 내용 입니다</div>
+
+
+
+[fadeIn(),fadeOut()]
+	
+	fadeIn():fade인 되면서 보이기
+	fadeOut():fade아웃 되면서 안보이기
+
+	-인자값으로는 숫자(1000분의 1초 단위),slow,normal(디폴트),fast
+	
+	$(document).ready(function () {
+			
+			 $('div.title').css('background-color', 'yellow')
+            .toggle(function () {
+                $(this).next().fadeIn('slow');
+
+            }, function () {
+
+                $(this).next().fadeOut('slow');
+            });
+
+        });
+
+	<div class="title">제목1</div>
+	    <div style="display:none;">제목1의 내용입니다</div>
+		<div class="title">제목2</div>
+	    <div style="display:none;">제목2 내용입니다</div>
+		<div class="title">제목3</div>
+	    <div style="display:none;">제목3 내용 입니다</div>
+
+
+
+[animate(),stop()]
+	-애니메이션  효과를 동시에 주고자 할때
+	animate({속성:값,속성1:값1},'slow'); {}안에 속성:값,속성1:값1 형태로 줌
+
+	stop():애니메이트 효과 멈추기
+
+	http://docs.jquery.com에서 옵션 설정 참고
+
+
+
+	  <style type="text/css">
+        div { 
+            position: absolute; background-color:#abc; left: 0px; top:50px;
+            width: 60px; height: 60px; margin: 5px; 
+        }
+    </style>
+
+	  $(document).ready(function () {
+			
+			  $("#go").click(function () {
+                $(".block").animate({ left: '+=100px', top: '+=100px',width:'+=50px',height:'+=50px'}, 4000);
+            });
+            // Stop animation when button is clicked
+            $("#stop").click(function () {
+                $(".block").stop();
+            });
+            // Start animation in the opposite direction
+            $("#back").click(function () {
+                $(".block").animate({ left: '-=100px', top: '-=100px',width:'-=50px',height:'-=50px' },4000);
+            });        
+        });
+
+
+	 <button id="go">Go</button> 
+	<button id="stop">STOP!</button>
+	<button id="back">Back</button>
+	<div class="block"></div>
+
+
+[attr() 메서드]
+
+	-DOM요소의 모든 속성값 설정 및 읽어 오는 메서드
+	설정시:$('선택자').attr("속성명","설정할 값") 혹은 JSON형태로 $('선택자').attr({"어트리뷰트":"값"})
+		즉 하나이상의 속성을 설정시에는
+		$('선택자').attr({"어트리뷰트1":"값1","어트리뷰트2":"값2","어트리뷰트3":"값3"})
+
+	읽어오기:$('선택자').attr('속성명');
+
+[removeAttr()]
+	-속성을 제거하는 함수
+	removeAttr('속성명')
+
+[text()/html() 메서드]
+
+	text():
+	- 태그안(시작태그와 종료태그 사이)의 텍스트값을 가져오거나 설정하는 메서드
+	  설정시:text("값");
+	  읽을때:text();
+	  html():
+	  html()메서드는 값에 html태그를 해석해서 보여주고 text()메서드는 html태그를 그대로 보여줌
+
+
+	  또한 요소가 여러개 있는 경우 $('선택자').text()은 모든 값을 읽어오고 
+	  $("선택자").html()는 첫번째요소의 innerHTML만 읽어 옴
+
+	  예1]
+	   $(document).ready(function () {    
+
+		alert($('div').text());//div1div2div3
+		alert($('div').html());//div1
+	    });
+
+	 <div>div1</div>
+	 <div>div2</div>
+	 <div>div3</div>
+
+
+	예2]
+
+	     $(document).ready(function () {          
+		    var txt1=$('div:first').text();
+				alert(txt1);
+				var txt2=$('div:last').text();
+				alert(txt2);
+
+				$("div:first").text("<h2>new div1</h2>");
+				$("div:last").html("<h2>new div4</h2>");
+		});
+
+		<div>div1</div>
+		<div>div2</div>
+		<div>div3</div>
+		<div>div4</div>
+
+
+
+[each()메서드]
+	
+	
+
+	
+	-찾은 jQuery 객체 수 만큼 반복(for문처럼 반복)하는 메서드로 사용빈도가 높음.
+
+
+
+	each(function(index){ });//인덱스는 0부터 자동 증가,반복값(index) 사용안할시에는 생략 가능 
+	혹은
+	each(data,function(index,entry){});
+	index은 반복 인덱스 이고  JSON데이타에서 entry[키값]으로 데이타를 읽어 온다
+
+	예]
+		$(document).ready(function () {
+			$('div').each(function (index){
+				$(this).attr({"id":"div"+index,style:"border:1px red solid;width:100px;height:100px"});
+				alert($(this).html()); 
+			});
+
+			$("#btn").click(
+				function(){
+
+					alert($("#div1").text());
+				}
+			);
+		});
+
+		<div> div1</div>
+		<div> div2</div>
+		<div> div3</div>	
+
+		<button id="btn">버튼</button>
+
+
+
+
+[form관련 jQuery선택기]
+
+	:input
+	input만 가져오는게 아닌 모든 폼 요소를 검색 input, textarea,select
+	단 $("input")은 input태그만 가져옴 그러나 $(":input")은 폼의 모든 입력요소 즉 하위요소를 가져옴
+
+	
+	:text
+	<input type="text" />인 요소검색
+	:password
+	<input type="password" />인 요소검색
+	:radio
+	<input type="radio" />인 요소검색
+	:checkbox
+	<input type="checkbox" />인 요소검색
+	:submit
+	<input type="submit" />인 요소검색
+	:image
+	<input type="image" />인 요소검색
+	:reset
+	<input type="reset" />인 요소검색
+	:button
+	<input type="button" />인 요소검색
+	:file
+	<input type="file" />인 요소검색
+	:enabled
+	disabled 속성이 없는 요소검색
+	:disabled
+	disabled 속성이 있는 요소검색
+	:checked
+	checked 속성이 있는(체크된) 요소검색
+	:selected
+	selected 속성이있는(선택된) 요소검색
+
+
+	예1] input과 :input의 차이 비교
+		
+		$(document).ready(
+
+			function(){
+
+				alert($("input").length);//1
+				alert($(":input").length);//3
+			}
+
+		);
+
+		
+		<input type="text" name="txt"/>
+		<textarea cols="40" rows="10" name="ta"></textarea>
+		<select name="sel">
+		<option value="A">A</option>
+		<option value="B">B</option>
+		<option value="C">C</option>
+		</select>
+
+
+
+
+	예2] 태그명과 type속성의 값 읽어 오기
+
+	 
+		$(document).ready(function () {
+		    //선택자.size();=>선택한 문서개체의 개수
+		    // alert($(':input').size());
+		    var str = "";
+		    //태그명과 속성값 가져오기
+		    //태그명:선택자.get(0).tagName 혹은 선택자.tagName
+		    //속성명:attr('속성명')
+		    $(':input').each(function () {
+			//str += "태그명: " + $(this).get(0).tagName;  
+			//혹은 즉 메서드에 접근할때는 반드시 $를 붙인다 속성은 $생략해야 함
+			str += "태그명: " + this.tagName;
+			str += "\n";
+			str += "TYPE의 속성값: " + $(this).attr('type');
+			str += "\n";
+
+		    });
+		    alert(str);
+
+		});
+	    
+
+		    <input type="button" value="Input Button"/><br />
+		    <input type="text"/><br />
+		    <input type="password"/><br />
+		    <input type="checkbox"/><br />
+		    <input type="file"/><br />
+		    <input type="hidden"/><br />
+		    <input type="image"/><br />
+		    <input type="radio"/><br />
+		    <input type="reset"/><br />
+		    <input type="submit"/><br />
+		    <select><option>선택상자</option></select><br />
+		    <textarea>텍스트 에리어</textarea><br />
+		    <button>버튼</button><br />
+	
+
+
+	예3] 텍스트 박스의 내용 복사
+
+		$(document).ready(function () {
+
+		    //모든 텍스트 박스에 배경요소 적용
+		    $(':text').css('background-color', "silver");
+		    //val()메서드를 이용한 값 얻어오기밑 넣기
+
+		    $('#btn').click(function () {
+
+			$('#txtDest').val($('#txtSrc').val());
+		    
+		    });
+		   
+
+		});
+	    
+
+		    원본 : <input type="text" id="txtSrc" />
+		    <hr />
+		    <input type="button" id="btn" value="복사" />
+		    <hr />
+		    대상 : <input type="text" id="txtDest" />
+			
+
+	예4] 비밀번호 확인 기능
+
+		$(document).ready(function () {
+		    $('#pwd1').keyup(function () {
+		       
+			$('#msg').text(''); 
+
+		    });
+
+		    $('#pwd2').keyup(function () {
+
+			var cmpstr1 = $('#txtPassword').val();
+			var cmpstr2 = $(this).val();		       
+		       
+			if (cmpstr1 == cmpstr2) {
+			    $('#msg').text(''); 
+			    $('#msg').html('<b>암호가 일치</b>');
+			}
+			else {
+			    $('#msg').text(''); 
+			    $('#msg').html('<b>암호가 불일치</b>');
+
+			}
+
+		    });
+
+
+		});
+	    
+
+		암호:<input type="password" id="pwd1" >
+		<hr/>
+		암호확인:<input type="password" id="pwd2" >
+	
+		<span id="msg"></span>
+
+	예4] 선택상자에서 선택된 value값을 텍스트 상자에 출력
+	
+		$(document).ready(
+		    function () {
+			$('#sel').change(function () {//select 박스 선택 변경시 change이벤트 발생
+
+			    //var value = $('#sel option:selected').text();//option태그 사이에 있는 값
+			    var value = $('#sel option:selected').val();//value속성에 지정한 값
+			    $('#txt').val(value);
+			});
+		    }
+		);
+	    
+	 
+		<select id="sel">
+		    <option value="basketball">농구</option>
+		    <option value="socker">축구</option>
+		    <option value="baseball">야구</option>
+		</select>
+		<hr />
+		<input type="text" id="txt" />
+
+
+	※Form 요소의 유효성 검증을 위한 jQuery Plug IN
+	http://bassistance.de/jquery-plugins/jquery-plugin-validation/
+
+
+
+
+
+
+[val()메서드]
+
+	-폼 요소의 값을 가져오거나 설정할때 사용
+	-폼 요소가 아닌 다른 요소에 사용하면 에러남
+	 그리고 라디오버튼을 체크 안한 경우 val()메서드는 undefined반환
+
+	1.텍스트박스 에 값 설정시=>val("값")
+	2.라디오 박스 선택시 =>val(['선택하려고하는 값'])
+	3.select박스(여러 선택가능하게 설정한 경우:multiple)=>val([선택하려고하는 값1','선택하려고하는 값2']);
+	
+		$(document).ready(
+		    function () {
+
+			//최초 로드시 값 설정
+			$('input:text').val("임수정");
+			$('input:radio').val(['MALE']);
+			$('#sel').val(['POLICY', 'ENTERTAINMENT']);
+
+
+		       
+			$('input:button').click(function () {
+			    //값 읽어 오기
+
+			    var msg = "";
+			    msg += $('#txt').val() + '\n';
+			    //라디오버튼에서 CHECK된게 없으면 값은 UNDEFINED
+			    msg += $('input:radio[name=Gender]:checked').val() + '\n';
+			    msg += $('#sel').val();
+			   // msg += $('#sel').val().join("@");//select박스에서 여러개 값을 읽어 올때 join()메서드로 구분자를 지정할 수 있다
+			                                       //디포틀 구분자는 ,(콤마)
+			    alert(msg);
+
+			});
+
+			
+		    }
+
+
+		);
+	    
+	  
+	    텍스트박스 : <input type="text" id="txt" /><br />
+	    라디오버튼 : 
+		<input type="radio" name="Gender" value="MALE" />남
+		<input type="radio" name="Gender" value="FEMALE" />여<br />
+	    드롭다운리스트 : 
+		<select id="sel" multiple="multiple" size="3">
+		    <option value="POLICY">정치</option>
+		    <option value="ECONOMY">경제</option>
+		    <option value="ENTERTAINMENT">연예</option>
+		</select><br />
+	    <input type="button" value="확인" />
+
+
+
+[eq(인덱스)]
+
+	- 요소중에서 인덱스로 얻어 올때 사용하는 메서드 인덱스는 0부터 시작
+
+	$('div:eq(2)'):선택기 필터 사용
+	$('div').eq(2):Traversing 메서드 사용
+
+	
+	$(document).ready(function () {
+		alert($("div:eq(1)").html());
+		alert($("div").eq(1).html());
+
+        });
+
+	<div>div1</div>
+	<div>div2</div>
+	<div>div3</div>
+
+
+[is(선택자)]
+
+	-해당 선택자가
+	 그 요소가 맞는지 아닌지를판단하는 멧서드로  true혹은 false반환
+
+	$(document).ready(function () {
+		//myDiv선택자의 자식으로 input요소의 type이 button 이 있냐 없냐
+		alert($('#myDiv').children().is('input[type=button]'));//true
+		//myDiv선택자가 input로 type이 button이냐?
+		alert($('#myDiv').is('input[type=button]'));//false
+
+		alert($('#myDiv').is('div'));//true
+
+	});
+	 <div id="myDiv">
+		<input type="text" />    
+		<input type="button" />    
+	  </div>
+
+
+[not(선택자)]
+	
+	-특정 문서개체를 제외하고자 할때
+	$(document).ready(function () {
+	//input요소중에서 type이 radio가 아닌 요소에 각각에 대해서
+
+	 $('input').not('input[type=radio]').each(function(){
+			   //배경색을 노란색으로
+			    $(this).css('background-color','Yellow');
+			
+			});
+
+	});
+	<div>
+		<input type="text" />    
+		<input type="password" />
+		<input type="checkbox"  />   
+		<input type="radio"  />  
+	</div>
+
+[end()]
+
+	-바로 상위의 전 단계 즉 바로 이전 선택기로 이동하는 메서드
+
+	 $(document).ready(
+		    function () {
+			alert($('div').find('p:last').find('b').html());//배구
+			//위를  이전단계로 돌리기
+			alert($('div').find('p:last').find('b').end().html());//<b>배구</b>
+
+
+		    }
+
+
+		);
+	    
+
+	 <div>
+	    <p>
+		<b>축구</b>
+	    </p>
+	    <p>
+		<b>농구</b>
+	    </p>
+	     <p>
+		<b>배구</b>
+	    </p>
+	</div>
+
+
+[append() 메서드]
+
+	- 동적으로 요소를 추가하기 위한 메서드1
+	  요소안에 있는 content 다음에 계속 추가 됨.
+	  $('선택자').append('html요소')
+
+
+
+	$(document).ready(function () {
+            
+           
+
+            $('#btn').click(function () {
+		//초기화 text('')와 같다
+                //$('#lblDisplay').empty();
+                var row = $('#row').val();
+                var col = $('#col').val();
+
+                var str = "<table border='1'>";
+                for (var i = 0; i < row; i++) {
+                    str += "<tr>";
+                    for (var j = 0; j < col; j++) {
+                        str += "<td>" + i + "행" + ", " + j + "열</td>"; ;
+
+                    }
+                    str += "</tr>";
+                }
+                str += "</table>";
+
+                $('#lblDisplay').append(str);
+
+            });
+
+	
+	<input type="text" id="row" />행
+	<input type="text" id="col" />열
+	<input type="button" id="btn" value="테이블 동적 생성" />
+	<div id="lblDisplay">대상</div>
+	
+[appendTo()/prependTo()]
+
+	-동적으로 요소를 추가하기 위한 메서드2
+	appendTo()/prependTo():
+	$('html태그').appendTo('선택자');
+	$('html태그').prependTo('선택자');
+		-둘다 요소안에 html태그를 추가한다
+		 단, appendTo()메서드는 요소안의 content다음에 
+		 prependTo()메서드는 요소안의 content이전에 추가
+
+
+[clone()]
+	-요소 복사하기
+
+	//요소 복사해서 요소 이전에 삽입
+	$('#src').clone().insertBefore('#dest').css('border','1px red solid');
+	// 요소 복사해서 요소 다음에 삽입
+	$('#src').clone().insertAfter('#dest').css('border','1px dotted blue');
+	//요소 복사해서 요소 안에서 content이전에 삽입
+	$('#src').clone().prependTo('#dest').css('border','1px green dotted');
+	//요소 복사해서 요소안에서 content다음에 삽입
+	$('#src').clone().appendTo('#dest').css('border','1px solid yellow');
+        $('<a href="www.naver.com">네이버</a>').appendTo('#dest');   
+	<div id="src">
+	원본
+	</div>
+    
+	<div id="dest" style="border:1px red dotted">
+	대상
+	</div>
+
+[insertAfter()/insertBefore()/before()/after()]
+	
+	insertAfter():
+		-DOM요소 다음에 html요소 추가 됨
+		$('html요소').insertAfter('문서개체');
+
+	insertBefore():
+		-DOM요소 이전에 html요소 추가 됨
+		$('html요소').insertBefore('선택자');
+	
+	
+	before():
+		-DOM요소 이전에 html요소 추가
+		$('선택자').before('html요소');
+	
+	after():
+		-DOM요소 다음에 html요소 추가
+		$('선택자').after('html요소');
+
+	<style type="text/css">
+        .content {  background-color:Silver; }
+        .paragraph { height:50px; border:1px solid red; }
+    </style>       
+	
+	 $(document).ready(
+            function () {
+
+                $('<hr/>').insertAfter('.paragraph');
+
+                $('div.paragraph:gt(0)').before('<a href="#" >TOP</a>');
+
+            }
+
+
+        );
+	
+	   <div class="paragraph">
+		<p class="content">내용1</p>
+	       
+	    </div>
+	    
+	    <div class="paragraph">
+		<p class="content">내용2</p>
+	         
+	    </div>
+	    
+	    <div class="paragraph">
+		<p class="content">내용3</p>
+	        
+	    </div>
+
+[wrap()]
+
+	- html요소로 해당 선택자를 wrapping하는 메서드
+	
+	 $(document).ready(
+            function () {
+		//h2요소를 <i>태그로 갑싸자
+               $('span').wrap('<i></i>');
+		//첫번째 axorm dkvdp <ol>태그 동적으로 삽입
+                $('<ol id="portal">').insertBefore('a:first');
+		//각각의 a태그를 ol태그안에 추가하고 <li>태그로 감싼다.
+                $('a').each(function () {
+                    $(this).appendTo('#portal').wrap('<li></li>');
+                });
+
+            }
+
+
+        );
+
+	<h2><span>포탈 사이트<span></h2>
+	<a href="http://www.naver.com/">네이버</a>
+	<a href="http://www.daum.net/">다음</a>
+        <a href="http://www.nate.com/">네이트</a>
+
+[empty(),remove()]
+
+	empty():요소의 내용 지우기
+	        DOM객체안의 내용을 클리어 시켜주는 함수
+		text('')와 같음
+	remove():요소 자체를 없애기
+
+	$('#btnEmpty').click(function () {
+				//요소안 내용 클리어
+			    $('div').empty();
+				//요소안에 내용 추가
+			    $('div').append('<b>영역</b>');
+				$('div').append('<b>영역1</b>');
+			});
+			$('#btnRemove').click(function () {
+			    $('div').remove();
+				//요소 자체를 제거했기때문에 아래 메서드 적용 안됨
+			    $('div').append('<b>영역</b>');
+			});
+
+	<input type="button" id="btnEmpty"  value="div안의 내용 지우기"/><br />
+	<input type="button" id="btnRemove"  value="div 요소 없애기"/><br />
+	   
+	<div>div안의 텍스트</div>
+
+
+
+
+
+[replaceWith()]
+
+	:다른 요소로 바꾸기
+	 $(선택자).replaceWith('html요소')
+
+		$('button').click(function () {
+
+                    $(this).replaceWith("<div style='background-color:"+$(this).text()+";color:white'>" + $(this).text() + "</div>");
+
+                });
+
+
+
+			<button>RED</button>
+			<button>BLUE</button>
+			<button>GREEN</button>
+			
+
+
+[JSON]
+ ※JSON(JavaScript Object Notation)] 이란?
+			    
+-네트웍을 통해 데이타를 전송할때 성능이 좋은 데이타 형
+-Key와 Value로 구성
+-[]를 사용하여 배열형 Value 사용가능
+-JSON공식 사이트:http://www.json.org
+-경량의 데이터 교환방식으로 인터넷에서 데이타를 주고받을때 표현하는 방법
+
+-JSON라이브러리 다운로드(JAR파일) :http://www.json.org ->
+하단에서 json-simple클릭->
+우측의 getting Started에서  json-simple-1.1.1.jar다운로드후 
+				   WEB-INF/lib에 복사
+
+예]
+   -JAVASCRIPT
+
+   var member ={"id":"kim","pwd":"1234"};
+   var id=member.id;//id에는 kim이 저장됨. 
+   JSON데이타명.키값으로 VALUE값을 가져옴.
+
+   var fruits=["apple","banana","grape"];//자바스트립트의 배열 표기법
+   var fruit=fruits[0];//fruit에는 apple이 저장됨
+   //members라는 키값에 배열을 대응하도록 데이타 구성
+   var list={"members":[{"id":"kim","pwd":"1234"},{"id":"choi","pwd":"5678"},{"id":"lim","pwd":"8989"}]};
+   //members라는 키값에 매핑됨 첫번째 인덱스 인 {"id":"kim","pwd":"1234"}의 json데이타를 가져옴 	
+   var member=list.members[0];
+   var id=member.id;
+
+
+

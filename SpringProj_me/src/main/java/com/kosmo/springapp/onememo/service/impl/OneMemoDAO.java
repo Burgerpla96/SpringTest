@@ -126,8 +126,7 @@ public class OneMemoDAO implements OneMemoService {
 
 	@Override
 	public int getTotalRecord(Map map) {
-		// TODO Auto-generated method stub
-		return 0;
+		return sqlMapper.selectOne("memoGetTotalRecord", map);
 	}
 
 	@Override

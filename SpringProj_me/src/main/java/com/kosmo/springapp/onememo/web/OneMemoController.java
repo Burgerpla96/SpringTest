@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.HttpSessionRequiredException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.kosmo.springapp.onememo.service.OneMemoDTO;
 import com.kosmo.springapp.onememo.service.OneMemoService;
+import com.kosmo.springapp.onememo.service.PagingUtil;
 
 /*
  * ※스프링 씨큐리티 사용시에는 
@@ -47,14 +49,62 @@ public class OneMemoController {
 	}
 	
 	
+	//리소스 파일 (onememo.properties)에서 읽어오기
+	//롬복꺼 아니다!!
+	@Value("${PAGE_SIZE}")
+	private int pageSize;
+	@Value("${BLOCK_PAGE}")
+	private int blockPage;
 	//목록 처리]
 	@RequestMapping("List.do")
-	public String list(@ModelAttribute("id") String id, @RequestParam Map map,Model model){
+	public String list(
+			@ModelAttribute("id") String id,
+			@RequestParam Map map,
+			Model model,
+			@RequestParam(required = false, defaultValue = "1") int nowPage,
+			HttpServletRequest req){//context root경로얻기용
 		//session에서 id가져오기, isLogin 불필요
 		//서비스 호출]
+		
+		//페이징을 위한 로직 시작)
+		//전체 레코드 수
+		int totalRecordCount = memoService.getTotalRecord(map);
+		//페이지 사이즈, blockPage는 위에서 주입함...
+		
+		//전체 페이지 수
+		int totalPage = (int)Math.ceil((double)totalRecordCount/pageSize); 
+		//현재 페이지 번호 -- @RequestParam(required = false, defaultValue = "1") int nowPage 처리...
+		
+		//시작 및 끝 ROWNUM 구하기
+		int start = (nowPage-1) * pageSize+1;
+		int end = nowPage * pageSize;
+		//페이징을 위한 로직 끝)
+		
+		
+		map.put("start", start);		
+		map.put("end", end);		
+		
+		
 		List<OneMemoDTO> list= memoService.selectList(map);
 		//데이타 저장]
+		String path = req.getContextPath();
+		if(map.get("searchWord")!=null) {
+			path += "/OneMemo/BBS/List.do?searchWord=" 
+					+map.get("searchWord")+"&searchColumn="+map.get("searchColumn")+"&";
+			//마지막 & 는 PagingUtil.java에서 만든 로직 때문...
+		}
+		else {
+			path += "/OneMemo/BBS/List.do?";
+		}
+		
+		//추가 --페이징 뿌려주기
+		String pagingString = 
+				PagingUtil.pagingBootStrapStyle(totalRecordCount, pageSize, blockPage, nowPage, path);
 		model.addAttribute("list", list);
+		model.addAttribute("pagingString", pagingString);
+		model.addAttribute("totalRecordCount", totalRecordCount);
+		model.addAttribute("nowPage", nowPage);
+		model.addAttribute("pageSize", pageSize);
 		//뷰정보 반환]
 		return "onememo10/bbs/List";
 	}

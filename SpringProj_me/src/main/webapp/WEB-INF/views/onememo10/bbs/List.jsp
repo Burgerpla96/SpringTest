@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%-- 
 <%@ include file="/WEB-INF/views/common/IsLogin.jsp" %>
@@ -31,9 +30,9 @@
 </head>
 <body>
 	<!--상단메뉴 시작-->
-	<%@ include file="/WEB-INF/views/templates/Top.jsp" %>
+	<%@ include file="/WEB-INF/views/templates/Top.jsp"%>
 	<!--  상단 메뉴 끝 -->
-	
+
 	<div class="container">
 		<!-- 점보트론(Jumbotron) -->
 		<div class="jumbotron">
@@ -71,9 +70,9 @@
 						<c:forEach var="item" items="${list }" varStatus="loop">
 							<tr>
 								<td>${totalRecordCount - (((nowPage - 1) * pageSize) + loop.index)}</td>
-								<td class="text-left">
-									<a href="<c:url value='/OneMemo/BBS/View.do?no=${item.no}&nowPage='/><c:out value='${param.nowPage}' default='1'/>">${item.title }</a>
-								</td>
+								<td class="text-left"><a
+									href="<c:url value='/OneMemo/BBS/View.do?no=${item.no}&nowPage='/><c:out value='${param.nowPage}' default='1'/>">${item.title }</a>
+									<span class="badge">${item.commentCount}</span></td>
 								<td>${item.name}</td>
 								<td>${item.postDate}</td>
 							</tr>
@@ -84,17 +83,45 @@
 			<!-- column -->
 		</div>
 		<!-- row -->
+
+
 		<!-- 페이징 -->
 		<div class="row">
 			<div class="col-md-12 text-center">${pagingString }</div>
 		</div>
+		
+		
+		<!-- 검색용 UI -->
+		<div class="row">
+			<div class="text-center">
+				<form class="form-inline" method="post" action="<c:url value='/OneMemo/BBS/List.do'/>">
+					<div class="form-group">
+						<select name="searchColumn" class="form-control">
+							<option value="title">제목</option>
+							<option value="name">작성자</option>
+							<option value="content">내용</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<input type="text" name="searchWord" class="form-control" />
+					</div>
+					<button type="submit" class="btn btn-primary">검색</button>
+				</form>
+			</div>
+		</div>
+		
+		
+		
 	</div>
 	<!-- container -->
 
 
+	
+
+
 	<!-- footer 시작-->
-	<%@ include file="/WEB-INF/views/templates/Footer.jsp" %>
-	<!-- fotter 끝 -->	
+	<%@ include file="/WEB-INF/views/templates/Footer.jsp"%>
+	<!-- fotter 끝 -->
 
 
 </body>

@@ -7,9 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -58,23 +59,19 @@ import com.kosmo.springapp.onememo.service.impl.OneMemoDAO;
 		"file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml"})
 public class OneMemoDAOTest {
 	
-	@Autowired
-	//@Resource(name = "oneMemoDAO")
+	@Resource(name = "oneMemoDAO")
 	private OneMemoDAO dao;
 	@Test
 	public void testIsLogin() {
 		Map map = new HashMap();
-		map.put("id","KIM");
+		map.put("id","PARK");
 		map.put("pwd","1234");
 		assertTrue(dao.isLogin(map));
 	}
-	
+
 	@Test
 	public void testSelectList() {
-		List<OneMemoDTO> list =  dao.selectList(null);
-		assertEquals(0, list.size());
+		List<OneMemoDTO> list=dao.selectList(null);
+		assertEquals(1, list.size());
 	}
-	
-	
-
 }

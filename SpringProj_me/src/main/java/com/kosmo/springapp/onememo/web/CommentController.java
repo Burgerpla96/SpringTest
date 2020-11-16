@@ -54,4 +54,30 @@ public class CommentController {
 	}
 	
 	
+	
+	//코멘트 수정 처리
+	@ResponseBody
+	@RequestMapping(value = "Edit.do",produces = "text/html; charset=UTF-8")
+	public String update(@RequestParam Map map) {
+		//서비스 호출
+		commentService.update(map);
+		//원본글: 댓글 번호 반환(확인 차원에서 하는 것 null이나 빈 문자열 반환해도 된다.)
+		return String.format("%s : %s", map.get("no").toString(),map.get("cno").toString());
+		
+	}
+	
+	
+	//코멘트 삭제 처리
+	@ResponseBody
+	@RequestMapping(value = "Delete.do",produces = "text/html; charset=UTF-8")
+	public String delete(@RequestParam Map map) {
+		//서비스 호출
+		commentService.delete(map);
+		//삭제 댓글 번호 반환 (확인용)
+		return String.format("%s", map.get("cno").toString());
+		
+	}
+	
+	
+	
 }////////////CommentController
