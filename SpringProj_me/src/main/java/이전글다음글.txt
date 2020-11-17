@@ -1,0 +1,13 @@
+가정: 현재 보고 있는 글의 idx값 10이라고 가정하자
+
+//이전글 얻어오기(idx값과 title동시에 얻어 오기)
+	-키값만 얻기
+	select min(b_no) from bbs where b_no > 현재글
+	-키값하고 다른 컬럼 얻기
+	select b_no,title from  bbs WHERE NO=(SELECT MIN(NO) FROM bbs WHERE NO > 현재글번호 )
+
+//다음글 얻어 오기
+	-키값만 얻기
+	select max(b_no) from bbs where b_no < 현재글
+	-키값하고 다른 컬럼 얻기
+	select b_no,title from bbs WHERE NO=(SELECT MAX(NO) FROM bbs WHERE NO < 현재글번호 )

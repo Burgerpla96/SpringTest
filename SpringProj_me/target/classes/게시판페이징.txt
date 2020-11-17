@@ -1,0 +1,105 @@
+[게시판 페이징 처리]
+
+	1. 페이징을 위한 쿼리문 작성
+
+		select * from (
+			select 컬럼명들, rownum as r from (
+			select 컬럼명들 from 테이블명 order by pk컬럼명 desc))  
+			where r between 시작rownum and 종료rownum
+		
+
+		예]
+		select * from (
+			select tb.*, rownum as r from (
+			select * from SimpleBoard order by no desc) tb)  
+			where r between 1 and 2
+
+	
+	2. 페이징에 필요한 값들 구하기
+
+		
+		- totalRecordCount : 총 등록된 글수
+			:select count(*) from 테이블명 으로 구한다
+
+		- pageSize: 한 페이지에 보여줄 레코드의 개수
+			:사용자 임의로 정한다.
+		
+		- blockPage: 페이징시에 하단에 보여줄 페이징의 수를 정한다
+			:사용자 임의로 정한다
+
+		- nowPage: 현재 보고 있는 글의 현재 페이지
+
+		- totalPage: 전체 페이지 수이다
+
+			-전체 페이지 수 구하기
+
+			int totalRecordCount=13;
+			int pageSize= 5;
+
+			1) int totalPage= (int)(Math.ceil(((double)totalRecordCount/pageSize)));
+										//올림으로 남은 레코드도 페이지에 보여줄 수 있게 한다.
+			2) int totalPage=(totalRecordCount-1)/pageSize+1;
+
+			시작 : int start= (nowPage-1)*pageSize+1;
+			끝 : int end = nowPage*pageSize;
+		
+
+	3. 글 삭제 순서에 관계없이 순번 구하는 로직(게시판목록에서)
+
+		int countNum=0;
+
+		while(rs.next()){
+
+		out.println(totalRecordCount - (((nowPage - 1) * pageSize) + countNum))
+			
+			countNum++;
+		}
+
+	4. 페이징을 위한 로직
+
+
+	<%
+	int blockPage=2;
+	
+	//intTemp:각 페이지의 첫번째 페이지 값 저장
+	int intTemp = ((nowPage - 1) / blockPage) * blockPage + 1;
+
+	//처음 및 이전을 위한 로직
+	if(intTemp != 1){
+		out.println("<a href='List.jsp?nowPage=1'>◀◀</a>&nbsp;<a href='List.jsp?nowPage="+(intTemp -blockPage)+"'>◀</a>");
+	}
+	
+	
+	
+	
+	
+	//페이지 표시 제어를 위한 변수
+	int blockCount = 1;
+	
+	//페이지를 뿌려주는 로직
+	//블락 페이지 수만큼 혹은 마지막 페이지가 될때까지 페이지를 표시한다1 
+	while(blockCount <= blockPage && intTemp <= totalPage){  // 페이지 오버 를 체크
+
+
+		//현재 페이지를 의미함 //현재 페이지는 링크걸지 않고 색만 다르게 하기
+		if(intTemp == nowPage){  
+		    out.println("<span style='Color:red'>"+intTemp+"</span>&nbsp;");
+		}
+		else
+		    out.println("<a href='List.jsp?nowPage="+intTemp+"'>"+intTemp+"</a>&nbsp;");
+	       
+		intTemp = intTemp + 1;
+		blockCount = blockCount + 1;
+	
+	}
+	
+	
+	
+	
+
+	//다음 및 마지막을 위한 로직
+	if(intTemp <= totalPage){
+		out.println("<a href='List.jsp?nowPage="+intTemp+"'>▶</a>&nbsp;<a href='List.jsp?nowPage="+totalPage+"'>▶▶</a>"); 
+	}	
+	%>
+ 

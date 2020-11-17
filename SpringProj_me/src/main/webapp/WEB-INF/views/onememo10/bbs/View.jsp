@@ -154,7 +154,7 @@
 					//입력댓글 클리어 및 포커스 주기
 					$('#title').val('');
 					$('#title').focus();
-					//글 수정수 등록 버튼으로 다시 교체하기
+					//글 수정시, 등록 버튼으로 다시 교체하기
 					if($('#submit').val()=='수정') $('#submit').val('등록');
 				}
 				
@@ -220,11 +220,11 @@
 				$('#title').val($(this).html());
 				//버튼은 등록에서 수정으로 변경될 수 있게 하기
 				$('#submit').val('수정')
-				//cno 설정
+				//form의 hidden 속성 중 name="cno"값 설정
+				//title 속성에 저장된 값이 cno여서 form tag로 수정할 때, 어떤것을 수정해야하는지 알려주기 위해 cno를 넘긴다. 
 				$('input[name=cno]').val($(this).attr('title'));
 				
 			});
-			
 			//코멘트 삭제 처리
 			$(".commentDelete").click(function(){
 				$.ajax({
