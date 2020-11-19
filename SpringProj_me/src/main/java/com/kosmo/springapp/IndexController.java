@@ -57,6 +57,18 @@ public class IndexController {
 		return "validation09/Validation";
 	}//////////validation
 	
+	//10번째..
 	
+	
+	@RequestMapping("/ajax.do")
+	public String ajax() {
+		//뷰정보 반환
+		return "ajax11/Ajax";
+	}//////////ajax
+	@RequestMapping("/exception.do")
+	public String exception() {
+		//뷰정보 반환
+		return "exception12/Exception";
+	}//////////exception
 	
 }

@@ -11,8 +11,6 @@
 	-->
 	<!-- Root Context: defines shared resources visible to all other web components -->
 	
-	
-	<!-- Test에서 JNDI가 들어가면 오류여서 test에서 사용하는 JNDI를 전부 jdbc로 바꿈 -->
 	<bean id="dataSourceByJNDI" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
 		<property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:orcl"/>
@@ -25,10 +23,7 @@
 		<property name="username" value="maven"/>
 		<property name="password" value="maven"/>
 	</bean>
-	
-	
-	
-	<!-- 마이바티스 지원을 위한 빈 등록 -->
+	<!-- 마이바티스 지원을 위한 빈(mybatis-spring-2.x.jar 등록 -->
 	<!-- 1]SqlSessionFactory -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<!-- 데이타소스:데이타베이스 연결정보 -->
@@ -36,6 +31,7 @@
 		<!-- 환경설정 파일 위치 설정 -->
 		<property name="configLocation" value="classpath:com/kosmo/springapp/onememo/mybatis/configuration.xml"/>
 	</bean>
+	
 	<!-- 2]SqlSessionTemplate -->
 	<bean id="template" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg ref="sqlSessionFactory"/>
