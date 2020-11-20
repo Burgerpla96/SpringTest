@@ -1,5 +1,7 @@
 package com.kosmo.springapp.onememo.service;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,7 +40,8 @@ public class OneMemoDTO {
 	//각 글에 따른 댓글 총 수 출력용
 	private String commentCount;
 	
-	
+	//마이바티스의 ResultMap 태그의 collection태그 테스트용
+	private List<MemoCommentDTO> comments;
 	
 	/*
 	public String getName() {

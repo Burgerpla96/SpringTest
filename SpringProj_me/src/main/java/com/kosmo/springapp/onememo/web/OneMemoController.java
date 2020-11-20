@@ -50,7 +50,7 @@ public class OneMemoController {
 	
 	
 	//리소스 파일 (onememo.properties)에서 읽어오기
-	//롬복꺼 아니다!!
+	//@Value 롬복꺼 아니다!!
 	@Value("${PAGE_SIZE}")
 	private int pageSize;
 	@Value("${BLOCK_PAGE}")

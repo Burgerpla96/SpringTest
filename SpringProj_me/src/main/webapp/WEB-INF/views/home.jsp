@@ -151,8 +151,11 @@
   				<li><a href='<c:url value="/database.do"/>'>Database</a></li>
   				<li><a href='<c:url value="/resource.do"/>'>Resource</a></li>
   				<li><a href='<c:url value="/validation.do"/>'>Vaildation</a></li>
+  				<li><a href="<c:url value="/dynamicsql.do"/>">마이바티스 동적SQL</a></li>
   				<li><a href="<c:url value="/ajax.do"/>">Ajax 요청</a></li>
   				<li><a href="<c:url value="/exception.do"/>">예외처리</a></li>
+  				<li><a href="<c:url value="/fileupdown.do"/>">File UpDown</a></li>
+  				<li><a href="<c:url value="/aop.do"/>">AOP</a></li>
   				
   				
   			</ul>

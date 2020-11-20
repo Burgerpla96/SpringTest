@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
- *  
  *  1. 확장자가 .properties인 리소스 파일 src/main/resources 에 생성
  *  2. servlet-context.xml 파일에 <context:property-placeholder>등록
  *  3. 클래스에서 사용시에는 @Value Annotation 사용
@@ -21,7 +20,6 @@ public class ResourcesController {
 	//@Value 어노테이션 -- .properties(리소스파일) 에 있는 키값을 가져올 수 있다.
 	//예) @Value("${키값}")
 	//    private 자료형 받을 변수
-	
 	@Value("${name}")
 	private String name;
 	@Value("${user}")

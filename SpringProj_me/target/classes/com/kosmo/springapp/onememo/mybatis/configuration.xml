@@ -58,6 +58,8 @@
 		<mapper resource="com/kosmo/springapp/onememo/mybatis/onememo.xml" />
 		
 		<mapper resource="com/kosmo/springapp/onememo/mybatis/comment.xml" />
+		
+		<mapper	resource="com/kosmo/springapp/onememo/mybatis/dynamicsql.xml" />
 	</mappers>
 	
 </configuration>

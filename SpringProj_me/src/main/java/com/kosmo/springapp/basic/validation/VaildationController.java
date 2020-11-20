@@ -104,10 +104,11 @@ public class VaildationController {
 	
 	@RequestMapping("/Validation/ValidationCheck.do")
 	//매개변수 순서 지키기 FormCommand 다음에 BindingResult!!
-	public String exec(FormCommand cmd, BindingResult errors, Model model) {
+	public String exec(FormCommand cmd, BindingResult errors,Model model) {
 		//내가 만든 validator 클래스의 validate()호출
 		//validate() 메서드 첫 매개변수에 유효성 검증 해달라고 커맨드 객체 넣어주고
 		//두번째로 에러정보 담아 달라고 Errors 타입 전달
+		//System.out.println(cmd);
 		validator.validate(cmd, errors);
 		//에러난지 판단해서 돌리기
 		if(errors.hasErrors()) {

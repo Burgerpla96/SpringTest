@@ -57,8 +57,11 @@ public class IndexController {
 		return "validation09/Validation";
 	}//////////validation
 	
-	//10번째..
-	
+	@RequestMapping("/dynamicsql.do")
+	public String dynamicsql() {
+		//뷰정보 반환]
+		return "dynamicsql10/DynamicSQL";
+	}/////////////
 	
 	@RequestMapping("/ajax.do")
 	public String ajax() {
@@ -70,5 +73,16 @@ public class IndexController {
 		//뷰정보 반환
 		return "exception12/Exception";
 	}//////////exception
+	@RequestMapping("/fileupdown.do")
+	public String fileupdown() {
+		//뷰정보 반환
+		return "fileupdown13/Upload";
+	}//////////fileupdown
+	@RequestMapping("/aop.do")
+	public String aop() {
+		//뷰정보 반환
+		return "aop14/AOP";
+	}//////////aop
+	
 	
 }

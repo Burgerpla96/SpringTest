@@ -54,6 +54,7 @@ s		 */
 		 * rejectValue("FormCommand의 속성명","에러코드");
 		 * 에러코드(중복 불가능!!!)는 임의로... 
 		 */
+		
 		FormCommand cmd = (FormCommand)command;
 		if(cmd.getName().trim().equals("")) {//입력하지 않았을 때
 			errors.rejectValue("name", "nameError");
