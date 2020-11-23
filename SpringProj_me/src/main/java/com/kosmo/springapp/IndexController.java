@@ -83,6 +83,15 @@ public class IndexController {
 		//뷰정보 반환
 		return "aop14/AOP";
 	}//////////aop
-	
+	@RequestMapping("/websocket.do")
+	public String websocket() {
+		//뷰정보 반환
+		return "websocket15/Websocket";
+	}//////////websocket
+	@RequestMapping("/tiles.do")
+	public String tiles() {
+		//뷰정보 반환
+		return "tiles16/Tiles.tiles";
+	}//////////tiles
 	
 }

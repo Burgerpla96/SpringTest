@@ -41,7 +41,7 @@ public class HomeController {
 		//request영역에 저장하는 것과 유사하다.
 		model.addAttribute("serverTime", formattedDate );
 		
-		return "home";
+		return "home.tiles";
 	}
 	
 }

@@ -5,7 +5,9 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd
+		http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
@@ -378,6 +380,46 @@
 	
 	<beans:bean class="com.kosmo.springapp.basic.aop.AdviceUsingAnnotation"/>
 	-->
+	
+	
+	<!-- web socket용  bean 생성-->
+	<beans:bean id='chatServer' class="com.kosmo.springapp.basic.websocket.WebSocketServer"/>
+	<!-- 웹소켁 서버와 클라이언트에서 접속하는 path mapping -->
+	<websocket:handlers allowed-origins="*"><!-- 모든 허용 -->
+		<websocket:mapping handler="chatServer" path="/chat-ws.do"/>
+	</websocket:handlers>
+	
+	
+	<!-- tiles -->
+	<beans:bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<beans:property name="definitions">
+			<beans:list>
+				<!-- 설정 파일 위치 넘겨주기 -->
+				<beans:value>/WEB-INF/views/templates/layouts.xml</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+	<!-- tiles처리위한 viewResolver 등록 -->
+	<beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<beans:property name="order" value="2"/>  <!-- .jsp도 view로 사용하기 위해 우선순위를 가장먼저--> 
+		<beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+	</beans:bean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 </beans:beans>

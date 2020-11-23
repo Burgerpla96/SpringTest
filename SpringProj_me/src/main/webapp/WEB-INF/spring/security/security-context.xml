@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+
+	<!-- 보안과 관련된 설정 파일 -->
+	<security:http auto-config="true" use-expressions="true">
+		<!-- security:frame-options에 disabled="true" 하면 iframe을 사용해도 괜찮게 된다. -->
+		<security:headers>
+			<security:frame-options disabled="true"/>
+		</security:headers>
+		<!-- 접근 범위가 좁은 경우를 위쪽으로 코딩한다! -->
+		<!-- 유저나 관리자만 /OneMemo/BBS/** 요청에 대하여 접근 가능하게 함 -->
+		<!-- 역할게 ROLE_ 이 붙어 있지 않아도 자동으로 추가 된다. USER -> ROLE_USER -->
+		<security:intercept-url pattern="/OneMemo/BBS/**" access="hasAnyRole('USER','ADMIN')"/>
+		<security:intercept-url pattern="/**" access="permitAll"/>
+		<!-- 폼 기반 로그인 설정 -->
+		<!-- 
+		login-page: 로그인처리 URL의 기본값은 login-page="/login" 
+	                           사용자 정의 폼 사용시 login-page="사용자 정의 로그인페이지 URL지정"
+		default-target-url:로그인 한 후에 보여질 페이지 URL지정. 
+		authentication-failure-url: 로그인 실패시 보여질 페이지 URL지정. .   기본값은 /login?error
+		login-processing-url:로그인 처리 URL지정.로그인 폼의 action속성값.기본값은 /loginProcess
+		username-parameter : 로그인 폼에 아이디 입력 필드에 지정한 name 속성값. 기본값은 "username"
+	    password-parameter : 로그인 폼에 비밀번호 입력 필드에 지정한 name 속성값. 기본값은 "password" 
+		-->
+		<security:form-login
+			login-page="/OneMemo/Auth/Login.do" 
+			default-target-url="/OneMemo/Auth/Login.do" 
+			authentication-failure-url="/OneMemo/Auth/Login.do?NotLogin=error" 
+			login-processing-url="/OneMemo/Auth/LoginProcess.do" 
+			username-parameter="id"
+			password-parameter="pwd"
+		/>
+		<!--
+		<security:logout/>요소로 로그아웃 설정:
+		logout-url :로그아웃 URL지정. 기본값은 "/logout" .			
+		delete-cookies : 쿠키 삭제 여부
+        invalidate-session : 세션 제거 여부
+		-->
+		<security:logout 
+			logout-url="/OneMemo/Auth/Logout.do"
+			invalidate-session="true" 
+			delete-cookies="true" 
+		/>
+		<!-- <security:session-management/> 중복 로그인 방지를 위한 요소 @@@:
+		invalid-session-url : 세션이 끊어졌을때 이동 할 URL지정(중복으로 인해 끊어진 경우도 해당함).
+		max-sessions="1" : 최대 허용 가능 중복 세션 수.(중복 로그인 방지하기 위해 1로 설정)
+		expired-url :  만기된 세션 즉 세션 유효시간이 경과 한 경우 이동할 URL(중복으로 인해 끊어진 경우도 해당함).
+		-->		
+		<security:session-management invalid-session-url="/OneMemo/Auth/Login.do">
+			<security:concurrency-control max-sessions="1" expired-url="/OneMemo/Auth/Login.do"/>
+		</security:session-management>
+		<!--disabled="true"면 csrf 공격에 무방비.
+		disabled="false"로 설정하여 CSRF를 활성화시
+		1.모든 폼  입력에 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>추가
+		2.로그아웃을 POST방식으로 구현	
+		-->
+		<security:csrf disabled="true"/>
+	</security:http>
+	
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:jdbc-user-service 
+				data-source-ref="dataSourceByJNDI"
+				users-by-username-query="SELECT M.ID USERNAME, M.PWD PASSWORD, ENABLED FROM MEMBER M JOIN AUTH_SECURITY AU ON M.ID=AU.ID WHERE M.ID=?"
+				authorities-by-username-query="SELECT M.ID AS USERNAME, AUTHORITY FROM MEMBER M JOIN AUTH_SECURITY AU ON M.ID=AU.ID WHERE M.ID=?"
+				/>
+		</security:authentication-provider>
+	</security:authentication-manager>	
+
+</beans>
+<!-- 
+	위 설정후 순서
+	1. AuthController.java의 로그인 처리 및 로그아웃 처리 주석
+	2. Login.jsp의 로그인폼의 action속성을 반드시
+	   login-processing-url="/OneMemo/Auth/LoginProcess.bbs"에 지정한
+	      경로와 일치 시켜야한다
+	3. Login.jsp의 세션영역에서 id를 읽어오는 부분을
+	      모두 security 태그 라이브러를 사용해서 변경한다.
+	4. Top.jsp도 3번과 같이 security 태그 라이브러를 사용해서 변경
+	5. .java에서 세션영역에서 읽어오는 코드를 모두 Autentication API를 
+	      사용한 코드로 변경
+	   (@SessionAttribute나 HttpSesion등은 주석처리
+	      인클루드 파일인 IsLogin.jsp(로그인 여부판단:필요없다)를 변경하거나 인클루드부분 주석처리(예:List.jsp파일 상단에 인클루드 됨)
+	   )
+
+ -->
+

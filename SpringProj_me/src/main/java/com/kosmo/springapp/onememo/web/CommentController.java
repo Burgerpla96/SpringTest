@@ -6,8 +6,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.json.simple.JSONArray;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,9 +28,13 @@ public class CommentController {
 	//코멘트 입력처리
 	@RequestMapping(value = "Write.do",produces = "text/html; charset=UTF-8")
 	@ResponseBody
-	public String write(@ModelAttribute("id") String id, @RequestParam Map map) {
+	public String write(
+			//@ModelAttribute("id") String id, 
+			Authentication auth,
+			@RequestParam Map map) {
 		//서비스 호출
-		map.put("id", id);//한글 댓글 작성자의 아이디 넘겨주기0
+		//map.put("id", id);//한글 댓글 작성자의 아이디 넘겨주기0
+		map.put("id", ((UserDetails)auth.getPrincipal()).getUsername());
 		commentService.insert(map);
 		return map.get("no").toString();//원본 글의 번호 반환
 	}//////////////write
