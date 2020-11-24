@@ -2,8 +2,11 @@ package com.kosmo.springapp.onememo.web;
 
 import javax.annotation.Resource;
 
+import org.json.simple.JSONObject;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kosmo.springapp.onememo.service.OneMemoService;
 
@@ -20,6 +23,23 @@ public class AuthController {
 		return "onememo10/member/Login.tiles";
 	}/////////////////login
 	//스프링씨큐리티 적용시 로그인처리 /로그아웃처리 주석처리
+	
+	
+	//로그인 여부 판단
+	@RequestMapping(value="IsLogin.do", produces = "text/html; charset=UTF-8")
+	@ResponseBody
+	public String isLogin(Authentication auth) {
+		//만약 인증이 안되었다면 auth는 null
+		JSONObject json = new JSONObject();
+		if(auth == null) {
+			json.put("isLogin", "NO");
+			return json.toJSONString();
+		}
+		json.put("isLogin", "YES");
+		return json.toJSONString();
+		
+	}/////////////////isLogin
+	
 	
 	/*
 	//로그인 처리]

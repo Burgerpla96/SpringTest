@@ -1,0 +1,324 @@
+[스프링으로 RESTful 웹 서비스 구축하기]
+
+가. REST,REST API,RESTful개념
+
+	A.REST
+		-웹(HTTP)의 창시자 중의 한사람인 Roy Fielding의 2000년 논문에서 소개된 개념으로 현재 아키텍쳐가 웹의 본래 설계의 
+		 우수성을 많이 사용하지 못하고 있다고 판단하여 웹의 장점을 최대한 활용할 수 있는 네트워크 기반의 아키텍처를 
+		 소개한 것이 REST 이다.
+		-Representational State Transfer 의 약자로 자원을 이름으로 구분하여 해당 자원의 상태를 주고 받는 모든 것을 의미
+		 즉 이미지,동영상,파일,DB데이타등의 자원을 표현(Representation)하기 위해 자원에 이름을 부여하여 자원의 상태(State:정보)를
+		 JSON이나 XML를 통해 주고받은 것을 의미한다
+		-REST는 기본적으로 웹의 기술과 HTTP 프로토콜을 그대로 활용하여 HTTP URI(Uniform Resource Identifier)를 통해
+		 자원(Resource)을 명시하고 HTTP Method(POST, GET, PUT, DELETE)를 통해 해당 자원에 대한
+		 CRUD 작업을 적용하는 것을 의미한다.		
+		-CRUD는 Create(POST),Read(GET),Update(PUT),Delete(DELETE) 를 의미한다
+		 여기서 POST,GET,PUT,DELETE는 HTTP 메소드로 REST에서는 이 4가지 메서드만 사용한다.
+	
+	    
+		-Rest의 구성요소는 자원(Resource),행위(Method) 및 표현(Representation of Resource)으로
+		 예를 들면 "이름이 가길동인 사용자를 생성한다"라는 요청이 있다면
+		 "사용자"는 리소스 이고 "생성한다"는 메소드 가되고 "이름이 가길동인 사용자"는 JSON이나 XML로 표현한다
+		 POST : /users/:username
+		 {
+			"users":{"name":"가길동"}
+		 
+		 }
+		 
+		-REST의 특징
+			1.Uniform Interface(일관된 인터페이스): Resource(URI)에 대한 요청을 통일되고, 한정적으로 수행하는 아키텍처 스타일을 의미
+											  이것은 요청을 하는 Client가 플랫폼(Android, Ios, Jsp 등) 에 무관하며, 특정 언어나 기술에 종속받지 않는 특징을 의미.
+											  이러한 특징 덕분에 Rest API는 HTTP를 사용하는 모든 플랫폼에서 요청가능하다
+		
+			
+			2.Stateless(무상태성):Rest API서버는 세션정보나 쿠키정보를 활용하여 작업을 위한 상태정보를 저장 및 관리하지 않는다.
+			                   이러한 무상태성때문에 Rest API서버는 서비스의 자유도가 높으며, 서버에서 불필요한 정보를 관리하지 않으므로 구현이 단순하다. 이러한 무상태성은 서버의 처리방식에 일관성을 부여하고, 서버의 부담을 줄이기 위함이다.
+							   
+			3.Cacheable(캐시 가능):Rest API서버는 결국 HTTP라는 기존의 웹표준을 그대로 사용하기 때문에, 웹의 기존 인프라를
+								 그대로 활용할 수 있다. 그러므로 Rest API서버 에서도 캐싱 기능을 적용할 수 있는데, HTTP 프로토콜 표준에서 사용하는 Last-Modified Tag 또는 E-Tag를 이용하여 캐싱을 구현할 수 있고, 이것은 대량의 요청을 효울척으로 처리할 수 있게 도와준다.
+			4.Client-Server Architecture (서버-클라이언트 구조):Rest API에서 자원을 가지고 있는 쪽이 서버, 자원을 
+			                                             요청하는 쪽이 클라이언트에 해당한다. 서버는 API를 제공하며, 클라이언트는 사용자 인증, Context(세션, 로그인 정보) 등을 직접 관리하는 등 역할을 확실히 구분시킴으로써 서로 간의 의존성을 줄인다.
+			5.Self-Descriptiveness(자체 표현):Rest API는 요청 URI만 보고도 이를 쉽게 이해할 수 있는 자체 표현 구조로 되어있다
+			6.Layered System(계층 구조):Rest API의 서버는 다중 계층으로 구성될 수 있으며 순수 비즈니스 로직을 수행하고 
+			                         그 앞단에 보안, 로드밸런싱, 암호화, 사용자 인증 등을 추가하여 구조상의 유연성을 줄 수 있다.
+									 또한 로드밸런싱, 공유 캐시 등을 통해 확장성과 보안성을 향상시킬 수 있다.
+
+	B. REST API
+	
+		-API(Application Programming Interface)는 데이터와 기능을 제공하여 프로그램간 상호작용을 촉진하여 프로그램간 정보를
+		 교환가능하도록 하는 것이다
+		-REST기반으로 서비스 API를 구현 한것을 REST API라 한다
+		-OpenAPI(누구나 사용할 수 있도록 공개된 API: 구글 맵, 공공 데이터 등)를 제공하는 업체 대부분은 REST API를 통해 제공한다.
+		
+		-REST API 설계 규칙
+			1.URI는 정보의 자원을 표현해야 하고 동사보다는 명사를 대문자보다는 소문자를 사용한다.
+				GET /Users/1 [x]
+				GET /users/1 [o]
+				
+			2.자원에 대한 행위는 HTTP Method(GET, POST, PUT, DELETE)로 표현한다.
+				GET /users/delete/1 [x]
+				DELETE /users/1 [o]
+				
+		-URI설계시 주의할 점
+			1.슬래시 구분자(/)는 계층 관계를 나타내는 데 사용
+				/users/students/elementary
+				/users/students/university
+			2.URI 마지막 문자로 슬래시(/)를 포함하지 않는다.
+				/users/students/elementary/ [x]
+				/users/students/elementary  [o]
+			3.하이픈(-)은 URI 가독성을 높이는데 사용
+			4.언더바(_)은 URI에 사용하지 않는다.
+			5.URI 경로에는 소문자가 적합하다.
+			6.파일 확장자는 URI에 포함시키지 않는다.
+			7.리소스 간에는 연관 관계가 있는 경우:/리소스명/리소스ID/관계가 있는 다른 리소스명
+				GET : /users/{userid}/devices (일반적으로 소유 'has'의 관계를 표현할 때)
+			8.GET 으로 URI 파라미터 요청시 한글는 사용하지 않는다(예:/rest/users/가길동)
+			
+			REST API 설계 예:
+			--------------------------------------------------------------
+			CRUD                   HTTP Method           Route
+			--------------------------------------------------------------
+			모든 사용자 표시            GET                   /users
+			--------------------------------------------------------------
+			한명의 사용자 표시           GET                   /users/:userid
+			--------------------------------------------------------------
+			사용자 생성                POST                  /users
+			--------------------------------------------------------------
+			사용자 수정                PUT                   /users/:usreid
+			--------------------------------------------------------------
+			사용자 삭제                DELETE                /users/:userid
+			--------------------------------------------------------------
+			
+		-HTTP 응답 상태 코드
+			--------------------------------------------------------------
+			응답코드            설명
+			--------------------------------------------------------------
+			200	             클라이언트의 요청을 정상적으로 수행
+			--------------------------------------------------------------
+			301	             클라이언트가 요청한 리소스에 대한 URI가 변경 되었을 때 응답 코드
+			--------------------------------------------------------------
+			400	             클라이언트의 요청이 부적절 할 경우 응답 코드
+			--------------------------------------------------------------
+			401	             클라이언트가 인증되지 않은 상태에서 보호된 리소스를 요청했을 때 응답 코드
+			--------------------------------------------------------------
+			405	             클라이언트가 요청한 리소스에서는 사용 불가능한 HTTP Method를 이용했을 경우 응답 코드
+			--------------------------------------------------------------
+			500	             서버에 문제가 있을 경우 응답 코드
+			--------------------------------------------------------------
+			
+	C. RESTful
+	
+		-REST API를 제공하는 웹 서비스를 RESTful하다고 한다
+		-RESTful은 REST를 REST답게 쓰기 위한 방법으로 누군가가 공식적으로 발표한 것이 아니다.
+		 즉 REST 원리를 따르는 시스템은 RESTful한 시스템이라고 한다
+		-RESTful한 API를 구현하는 근본적인 목적이 성능 향상에 있는 것이 아니라 일관적인 컨벤션을 통한 API의 
+		 이해도 및 호환성을 높이는 것이 주 목적임으로 성능이 중요한 상황에서는 굳이 RESTful한 API를 구현할 필요는 없다.
+
+		-CRUD기능을 모두 POST로만 처리하는 API는 RESTful하지 못하다고 할 수 있다.
+		
+※URI 과 URL의 차이점
+	URL(Uniform Resource Locator):인터넷 상 자원의 위치를 의미.자원의 위치라는 것은 결국 어떤 파일의 위치를 의미한다.
+	URI(Uniform Resource Identifier):인터넷 상의 자원을 식별하기 위한 문자열의 구성으로
+                                     URI는 URL을 포함하게 됨으로 URI가 보다 포괄적인 의미를 담고 있다.
+									 
+									 
+나.  RESTful 웹 서비스 구축
+
+
+	A. 스프링 MVC 프로젝트 생성
+		File - New -Other 에서 spring으로 검색- Spring Legacy Project - 프로젝트명 
+		  입력후 Spring MVC Project클릭하여 생성
+		  
+	B. POM.XML 설정
+		1.스프링 4.X대 버전 및 JDK버전변경
+			<!--  JDK버전 -->
+			<java-version>1.8</java-version>
+			<!-- 스프링 프레임워크 버전 변경:@RestController가 4.x에서 제공 -->
+			<org.springframework-version>4.3.9.RELEASE</org.springframework-version>
+		2. jackson-databind:DTO계열(혹은 VO)을 JSON으로 혹은 JSON을 DTO계열의 자바 객체로 바인딩 해주는 라이브러리 등록
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>	
+				<artifactId>jackson-databind</artifactId>	
+				<version>2.9.8</version>	
+			</dependency>
+		3. commons-fileupload:파일 업로드를 위한 라이브러리
+		
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>1.3.2</version>
+			</dependency>
+			※스프링 빈 설정파일 sevlet-context.xml에 아래 빈 등록 및 이미지 표시용 태그 등록
+			<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+				<beans:property name="maxUploadSize" value="10485760" /> <!-- 10MB 제한 -->
+			</beans:bean>
+			<!-- webapp의 어느 디렉토리에 스태틱 리소스(이미지,.css,.js등)를 두더라도 읽어 올수 있도록 설정하는 부분-->
+			<default-servlet-handler/> 
+		
+
+		4.마이바티스 관련 설정
+			A)pom.xml에 아래 디펜던시 태그 추가
+				<!--  스프링 JDBC 라이브러리 추가 -->
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-jdbc</artifactId>
+					<version>4.3.9.RELEASE</version>
+				</dependency>  
+				<!-- 마이바티스 사용을 위한 디펜던시 추가 -->
+				<dependency>
+					<groupId>org.mybatis</groupId>
+					<artifactId>mybatis</artifactId>
+					<version>3.5.0</version>
+				</dependency>
+				<dependency>
+					<groupId>org.mybatis</groupId>
+					<artifactId>mybatis-spring</artifactId>
+					<version>1.3.2</version>
+				</dependency>
+				<!-- 마이바티스 사용을 위한 디펜던시 추가끝 -->
+				
+			B)src/main/resource에 mybatis패키지 생성후 configuration.xml 작성 및 Contacts.xml작성
+				
+				[configuration.xml]
+				<?xml version="1.0" encoding="UTF-8"?>
+				<!DOCTYPE configuration  
+				PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  
+				"http://mybatis.org/dtd/mybatis-3-config.dtd">
+				 <!-- myBatis 환경설정파일
+					 1]데이타베이스 연결정보 설정
+					 2]매퍼파일의 위치정보 설정
+				 -->
+				<configuration>	
+					<!-- 자바빈 별칭:매퍼파일에서 환경설정 파일로 위치됨.--> 
+					<typeAliases>
+						<typeAlias alias="ContactsDTO" type="com.kosmo.rest.ContactsDTO"/>		
+					</typeAliases>
+					
+					
+					<!-- 매퍼파일(SQL쿼리 결과와 자바빈 매핑) 정보 설정 -->	
+					<mappers>
+						<mapper resource="mybatis/Contacts.xml" />		
+					</mappers>
+					
+				</configuration>
+				[Contacts.xml]
+				<?xml version="1.0" encoding="UTF-8" ?>
+				<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+				"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+				<!-- namespace속성:매퍼파일의 완전한경로 .xml는 생략 -->
+				<!-- ※ibatis와는 다르게 id값에 .(dot)를 사용 못한다. -->
+
+				<mapper namespace="mybatis.Contacts">
+					
+				</mapper>
+
+			C)src\main\webapp\WEB-INF\spring 아래 root-context.xml에 빈등록
+			<!-- Root Context: defines shared resources visible to all other web components -->
+			<bean id="datasource" class="org.springframework.jndi.JndiObjectFactoryBean">
+				<property name="jndiName" value="rest/api"/>		
+				<property name="resourceRef" >
+					<value>true</value>
+				</property>
+			</bean>		
+			<!-- 마이바티스 지원을 위한 빈 등록 -->    
+			 <!--  1]SqlSessionFactory -->
+			 <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+				<!-- 데이타소스:데이타베이스 연결정보 -->
+				<property name="dataSource" ref="datasource"/>
+				<!-- 환경설정 파일 위치 설정 -->
+				<property name="configLocation" value="classpath:mybatis/configuration.xml"/>
+			 </bean>
+			<!-- 2]SqlSessionTemplate -->
+			<bean id="template" class="org.mybatis.spring.SqlSessionTemplate">
+				<constructor-arg ref="sqlSessionFactory"/>
+			</bean>
+			
+			D)server.xml에 JNDI설정
+			
+			<Resource auth="Container"
+				driverClassName="oracle.jdbc.driver.OracleDriver" 
+				maxTotal="20" maxIdle="20" 
+				name="rest/api" password="rest" 
+				type="javax.sql.DataSource"
+				url="jdbc:oracle:thin:@127.0.0.1:1521:orcl" 
+				username="rest"/>
+			
+			<ResourceLink global="rest/api"
+				name="rest/api"
+				type="javax.sql.DataSource"/> 
+			
+			E)오라클에 테이블 및 시퀀스 생성
+				SQL> CREATE TABLE CONTACTS(
+				  2  CONTACT_ID NUMBER PRIMARY KEY,
+				  3  NO NUMBER,
+				  4  NAME NVARCHAR2(10) NOT NULL,
+				  5  PHOTO VARCHAR2(100),
+				  6  TEL VARCHAR2(20));
+				  
+				SQL> CREATE SEQUENCE SEQ_CONTACTS
+				  2  NOCACHE
+				  3  NOCYCLE;
+				  
+			F)com.kosmo.rest패키지에 ContactsDTO 및 ContactsDAO클래스 만들기
+			
+			
+	C.web.xml 설정
+	
+		-FORM태그 POST방식으로 사용자 입력 파라미터 전달시 한글 깨지는 거 처리하기 위한 필터 등록
+		<filter>
+			<filter-name>CharacterEncoding</filter-name> <!-- filter-name은 임의로-->
+			<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+			<init-param>
+				<!-- param-name과 param-value은 아래처럼-->
+				<param-name>encoding</param-name><!--setEncoding()호출-->
+				<param-value>UTF-8</param-value>
+			</init-param>
+		</filter>
+		<filter-mapping>
+		  <filter-name>CharacterEncoding</filter-name> 
+		  <url-pattern>/*</url-pattern>
+		</filter-mapping>
+
+	D. src/main/java의 base package에 컨트롤러 클래스(RestAPIController.java)  
+       만들기
+	
+		-주요 어노테이션
+		@RestController:스프링 4.X대에 나온 어노 테이션으로 @Controller와 @ResponseBody어노테이션을 합친 것으로
+		                컨트롤러 메소드의 반환값이 응답바디에 쓰인다.
+						즉 반환 타입이 String이면 해당 반환 문자열이 
+						그리고 DTO계열이면 JSON 형식({키:값}) List<DTO계열>이면 JSON배열 형식([{},{},...])
+						이 응답바디에 보내진다
+		
+		@PostMapping:POST방식의 요청을 받는다
+		@GetMapping:GET방식의 요청을 받는다
+		@PutMapping:Put방식의 요청을 받는다
+		@DeleteMapping:Delete방식의 요청을 받는다
+		@PathVariabel:URI 파라미터를 받을때 사용
+		@RequestBody:컨트롤러 메소드의 인자 타입으로 @RequestBody DTO클래스 변수명 형식으로
+		             JSON으로 데이타를 받을때
+		@RequestPart: 파일 업로드시 @RequestPart(value="file입력요소의 name값") MultipartFile 변수명
+		              형식으로 파일 업로드처리시
+		
+		@CrossOrigin :서버측에서 크로스 도메인을 허용하여 크로스 도메인 이슈(Cross-origin Http)를 해결하기 위한 어노테이션
+		              Spring 4.2부터 지원되는 이 어노테이션은 CORS를 스프링을 통해 설정할 수 있는 기능이다.
+
+		※크로스도메인 이슈
+		웹 브라우저에서 Ajax 등을 통해 다른 도메인의 서버에 데이타를 요청할 경우 나타나는 보안 문제를 말한다
+		
+		CORS(Cross-origin resource sharing)는 웹 페이지의 제한된 자원을 외부 도메인에서 접근을 허용해주는 메커니즘이다
+		 
+		
+		@CrossOrigin 어노테이션는 기본적으로 "모든 도메인, 모든 요청방식" 에 대해 허용 한다는 뜻이다.
+		아래처럼 특정 도메인만 접속을 허용할 수도 있다.
+		@CrossOrigin(origins = "허용주소1:포트1,허용주소2:포트2,...")
+		
+		
+	E.views/home.jsp에 FORM태그로 REST API를 테스트 하기위한 UI작성:소스참조
+	
+	F. 테스트:
+	
+		FORM태그를 이용한 테스트는  E.에서 만든 페이지로 테스트
+		그리고 페이지 없이 테스트 하려면 POSTMAN으로 테스트.
+		테스트 방법은 RestAPIController.java파일의 주석 참조
+	
+	

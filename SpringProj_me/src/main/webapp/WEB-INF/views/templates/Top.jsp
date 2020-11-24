@@ -13,11 +13,30 @@
 
 
 <script>
+	function isLogin(){
+		//ajax 요청 - 로그인 여부 판단
+		$.ajax({
+			url:"<c:url value='/OneMemo/Auth/IsLogin.do'/>",
+			dataType:'json',
+			success:function(data){//data를 json 형태로 받는다.
+				if(data.isLogin == 'YES'){//로그인이 되었다면 
+					//목록으로 이동 시키기
+					location.replace("<c:url value='/OneMemo/BBS/List.do'/>");
+				}
+				else{//로그인이 안되었다면
+					alert("로그인후 이용하세요.");
+					location.replace("<c:url value='/OneMemo/Auth/Login.do'/>");
+				}
+			},
+			error:function(e){console.log(e);}
+		});
+	}
+
+	
 	function logout(){
 		//location.replace("<c:url value="/OneMemo/Auth/Logout.do"/>");
 		$('#logoutForm').submit();//spring security 에 csrf 공격 사용시
-		
-	}	
+	}
 </script>
 
 <!-- 로그아웃 get방식을 post방식으로 변경하기 위한 form 추가 -->
@@ -73,8 +92,13 @@
 				<sec:authorize access="isAuthenticated()">
 					<li><a href="javascript:logout()">로그아웃</a></li>
 				</sec:authorize>
-				
+				<!-- 
 				<li><a href="<c:url value="/OneMemo/BBS/List.do"/>">한줄 댓글 게시판</a></li>
+				-->
+				<!-- AJAX로 처리해서 하얀 화면에 alert뜨는것 바꾸기 -->
+				<!-- ajax로 로그인 여부 판단후 이동 -->
+				<li><a href="javascript:isLogin()">한줄 댓글 게시판</a></li>
+				 
 				<li><a href="#">공지사항</a></li>
 			</ul>
 		</div>
