@@ -195,7 +195,7 @@ public class RestAPIController {
 	
 	
 	//레코드 수정하기
-	//PutMapping해야하는데 안되서 Post로 함
+	//PutMapping해야하는데 안되서 Post로 함 //파일 업로드는 post로 해야만 한다!!!
 	@CrossOrigin
 	@PostMapping(value = "/contacts/{contact_id}", produces = "text/html; charset=UTF-8")
 	public String update(@PathVariable String contact_id, 

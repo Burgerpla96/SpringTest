@@ -5,6 +5,8 @@
 <title>Home</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
+	a = 10;
+	console.log(a);
 	$(function(){
 		//POST method: json으로 하나의 데이터를 받아서 받은 결과 그대로 json으로 응답 보내기
 		$('#btn1').on('click',function(){
