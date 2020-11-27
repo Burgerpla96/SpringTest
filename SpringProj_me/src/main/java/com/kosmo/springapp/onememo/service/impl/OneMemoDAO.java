@@ -149,6 +149,7 @@ public class OneMemoDAO implements OneMemoService {
 		session.close();
 		return affected;
 		*/
+		System.out.println("여기입니다. "+map.get("content"));
 		//방법 3.
 		return sqlMapper.insert("memoInsert", map);
 	}

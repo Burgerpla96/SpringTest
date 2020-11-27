@@ -3088,8 +3088,7 @@ step4]AbstractView를 상속받은 View클래스에서는
 	그렇기 때문에 아래처럼 일반적으로 사용하던 viewResolver 가 처리하는 것이 아니라
 
 
-	<bean id="viewResolver" 
-	class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 			<property name="prefix" value="/"/>
 			<property name="suffix" value=".jsp"/>
 			<property name="order" value="1"/>

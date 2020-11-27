@@ -1,0 +1,379 @@
+GIT
+
+
+
+형상관리 툴 사용하기
+
+Git은  리누스 토발즈에 의해 개발된 버전관리 도구로
+                                   원래는 Linux 소스코드를 관리할 목적으로 개발 되었다.
+                                   즉 소스코드를 효과적으로 관리하기 위해 개발된 버전관리 및 협업을 위한
+                                   도구이다
+                                   
+1.로컬 저장소 만들기
+STEP1]Window->Preference->Team->Git->Configuration에서
+         Git사용자의 정보 설정
+         User Settings탭에서 add entry버튼 클릭->
+         key:user.email
+         value:본인 이메일
+         다시 add entry버튼 클릭->
+         key:user.name
+         value:본인 이름
+STEP2]이클립스에서 프로젝트 생성
+STEP3] 프로젝트 우클릭 -> Team->Share Project->
+         Use OR CREATE REPOSITORY IN PARENT FOLDER OF PROJECT 체크시에는
+         현재 프로젝트 폴더 하위에 로컬 리포지토리(.git)를 만든다
+         Create버튼 클릭시에는 
+         특정 폴더에 로컬 리포지토리를 만든다 
+         위와 같이 하면 .git 디렉토리가 생기고 .git디렉토리가  Local Repository다
+         이때 프로젝트  폴더나 특정 폴더가 Working Directory다
+         
+        
+STEP4]CREATE REPOSITORY 버튼 클릭
+STEP5]FINISH버튼 클릭
+
+프로젝트명 옆에 [프로젝트명 NO-HEAD]가 붙고
+프로젝트의 모든 폴더와  파일에 ?가 붙는다 즉 아직까지는 브랜치의  HEAD가 없는 상태고
+GIT에서 관리가 가능한 즉 추적이 가능한 상태가 아니다라는 의미다
+
+
+
+WORKING DIRECTORY-->Add-->Staging(Index)-->Commit-->로컬 리포지토리에 버전생성됨
+
+STEP6]프로젝트 우클릭 -> Team->Add to Index로 COMMIT이 가능하도록
+        스테이지에 올린다(Git Staging탭에서 확인 가능)
+        Git Staging 탭이 안보이면 Window->Sow View ->Other에서 Git으로 검색
+STEP7]Commit  Message작성 후 Commit
+        그러면  로컬리포지토리에 버전이  하나 생긴다
+
+         Commit and Push : 로컬 리포지토리에 변경사항을 반영하고 원격 리포지토리에도
+                                변경사항을 업로드 한다
+         Commit :로컬리포지토리에만 변경사항 반영
+
+STEP8]이제부터 기능 추가 나 버그 수정등 의미 있는 변경사항이 있을때마다
+        Add To Index ->Commit작업을 반복한다
+        프로젝트 우클릭 ->Team ->Add to Index 시 는 모든 변경된 파일이 스테이지에
+        올라가고 
+        특정 파일만 스테이지에 올릴때는 해당 파일루클릭->Team ->Add to Index 
+
+이전 커밋 상태로 되돌리기
+Check Out
+STEP1]프로젝트 선택후 마우스 우클릭->Team->Show In History
+STEP2]Show In History목록에서 특정 history 선택후 마우스 우클릭->Check Out
+
+Reset
+STEP1]프로젝트 선택후 마우스 우클릭->Team->Show In History
+STEP2]Show In History목록에서 특정 history 선택후 RESET
+      -hard:돌아가려는 이력 이후의 모든 내용을 지움,모든것이 초기화 됨.
+      -soft:돌아가려 했던 이력으로 되돌아 갔지만, 이후의 내용이 지워지지
+            않고, 해당 내용의 인덱스(또는 스테이지)도 그대로 있다.
+            바로 다시 커밋할 수 있는 상태로 남아있는 것이다
+ 
+      -mixed:돌아가려 했던 이력으로 되돌아 갔지만. 
+             이후에 변경된 내용에 대해서는 남아있다, 
+             인덱스는 초기화 된다.즉 Unstage상태로 돌아간다
+             커밋을 하려면 다시 변경된 내용을 다시 스테이지로 올려야 한다
+           
+Check Out는 Reset의 hard와 같다고 보면 된다    
+
+Git Staging탭과 History탭으로 확인해 보자
+
+Revert Commit
+
+STEP1]프로젝트 선택후 마우스 우클릭->Team->Show In History
+STEP2]Show In History목록에서 특정 history 선택후 revert commit를 클릭하면
+        해당 커밋이 취소가 되고  새로운 커밋(취소용)이 생성된다
+주의사항: 반드시 부모 커밋 이 있는 history를 선택해야 한다
+
+revert는 커밋을 보존하면서 새로운 커밋을 하나 만든다
+
+다시 원래로 돌아가려면 새롭게 생긴 커밋을 선택하고 reset-hard를 선택하면 원래 커밋시점으로 되돌아 간다
+
+원격저장소 만들기
+STEP1]  https://github.com/  에회원가입
+STEP2] 회원가입시 작성한 이메일에서 가입확인
+STEP3] 원격 저장소 생성-Home->New repository클릭 혹은 Start a Project클릭->
+       Repository name입력 및 public선택
+       Initialize this repository with a README 체크후
+
+       Create Repository클릭
+
+       우측 Clone or download 클릭후 URL 복사해 놓자
+       예]https://github.com/hwanyhee/CS_BACKEND.git
+
+       Clone: Remote Repository(github)의 전체 파일을  자신의 PC로 가져오는것(다운로드)
+
+
+        
+     
+
+프로젝트와 원격 저장소 연결하여 원격에 프로젝트 전체 올리기
+       
+STEP1] 프로젝트 선택후 마우스 우클릭->Team->remote->push->
+          Custom URI에 위에서 복사한 원격저장소 주소 붙여넣기
+           ※port번호는 넣지 않는다
+STEP2] Add All Branches Spec버튼 클릭
+STEP3] Force Update 체크후 next->finish버튼 클릳
+
+github.com에 프로젝트가 업로드 되었는지확인
+
+STEP4]이제부터 기능 추가 나 버그 수정등 의미 있는 변경사항이 있을때마다
+        Add To Index ->->Commit message작성->Push and Commit작업
+        ->Branch에 master 입력후 Force overwrite항목 체크 후
+       next->finish버튼 클릭 반복
+
+
+
+
+
+원격 저장소에 있는 프로젝트로 이클립스에 import하기
+원격과 연결되어 있는 프로젝트 우클릭-> Team->Disconnect후->프로젝트 삭제후 테스트
+STEP1]Import -> Git->Project From Git->Clone URI
+STEP2]상기 STEP3에서 복사한 URI로 설정
+
+원격 저장소에서 변경된 파일 가져오기-로컬 리포지토리가 변경됨
+테스트를 위한 사전작업-
+ 먼저 github.com에서 upload file메뉴로 새로운 파일 추가  
+ 혹은
+ 특정 파일  선택-> Edit This file 아이콘 선택해서 수정->Preview Change 클릭->Commit  Change클릭
+1.PULL
+
+ 
+ 프로젝트 마우스 우클릭 ->Team->pull
+
+2.FETCH
+
+STEP1]프로젝트 마우스 우클릭 ->Team->remote->Fetch From클릭->NEXT->FINISH클릭
+STEP2]프로젝트 마우스 우클릭 ->Team->ㅡ>Merge 클릭
+
+
+
+
+
+로컬 리포지토리 파일을 원격과 동일한 내용으로 되돌리기-WORKING DIRECTORY가 변경됨
+
+-로컬리포리토리의 내용이 
+ 원격과 다른 경우 ..
+ 원격과 동일한 내용으로 변경하고자 하는 경우
+
+STEP1]프로젝트 선택후 마우스 우클릭->Team-> Synchronize Workspace
+      원격하고 다른 부분을 synchronize탭에 표시해준다. 해당 파일 클릭시
+      원격하고 다른 부분을 비교해준다
+      원격하고 동일하게 하려면 해당 파일이나 프로젝트 선택후 OVERWRITE클릭 혹은 Merge
+      
+     원격의 파일 내용하고 로컬의 Working Directory내용이 같아짐 즉
+     ///로컬리포지토리에 반영하기 위해 ADD->STAGING->COMMIT해야함
+
+
+브랜치 만들고 작업후 다시 머지하기
+브랜치명:
+
+원격-오리진
+
+로컬-마스터
+
+
+STEP1]프로젝트 선택후 마우스 우클릭->Team->Switch To -> New Branch
+
+      HEAD가 새로운 브랜치로 이동됨(SHOW IN HISTORY에서 확인)
+
+
+      폴더 만들고 파일 생성 테스트
+
+
+      Add To Index 후 Commit and Push해도 원격에  master브랜치에 반영이 안됨
+ 
+
+STEP2]프로젝트 선택후 마우스 우클릭->Team->Switch To -> master
+      즉 마스터로 통합할 것이기때문에 HEAD를 MASTER로 변경
+STEP3]프로젝트 선택후 마우스 우클릭->Team->MERGE
+
+      local섹션에서 머지하려는 브랜치(생성한 브랜치) 선택후 Merge 클릭
+
+STEP4]머지가 된 상태에서 프로젝트 선택후 마우스 우클릭->Team->Remote->Push로 원격에 업로드(Force Update체크 불필요 즉 강제 푸시를 안한다)
+
+
+팀작업 방법
+
+1. 포크 와 PR-오픈소스
+
+   FORK->CLONE->ADD-  >COMMIT->PUSH->PULL REQUEST
+
+   Fork후 클론 주소로 Clone 수정사항 있을시  스테이지에 올리고(Add)
+
+   변경부분 반영(Commit)하고  내 원격 리포지터리에 올리고(Push)   
+
+  수정되었으니 가져가라고 PULL REQUEST(PR)  그러면 원작자가 내용받고 Merge
+
+
+
+2. 깃허브 SETTINGS의 Collaborator메뉴에서 권한추가
+
+   STEP1]권한을 부여받은 사람은 본인 이메일에서 수락을 클릭한다 
+
+   STEP2]허용한 사람한테 클론 주소를 알려준다           
+
+   STEP3]권한이 부여된 사람은 클론주소로 프로젝트를 이클립스에서 IMPORT한다
+
+           계정은 본인 계정을 입력한다.
+
+  
+
+3. 한명이 공통 계정으로 Github에 리모트 리포지터  만들기
+
+
+
+팀 작업시 Conflict(충돌)나는 경우-동일한 파일이 원격과 로컬이
+
+                                       다르거나 혹은
+
+ 원격에는 새로운 커밋이 있으나 로컬에는 없는 경우
+
+ commit and push시 충돌난다
+
+이때는 먼저 
+
+STEP1]프로젝트 우클릭->Team->Pull로 원격의 파일 내용 머지한다
+
+만약 동일한 파일이 수정되었다면
+
+원격과 로컬의 다른 부분을 보여준다
+
+         <<<<<<< HEAD아래 는 로컬부분이고
+
+         =======부터 
+
+         >>>>>>> refs/remotes/origin/master사이는
+
+        원격부분으로 알맞게 수정후 Commit and Push
+
+동일한 파일이 수정이 안됬다면 
+
+프로젝트 우클릭->Team->Remote->Push(강제 푸쉬할 필요없다)
+
+
+
+[팀작업시 아래 사항 준수]
+
+1. 로컬에서 작업이 끝나면 일단 commit으로 로컬 리포지토리에 반영한다
+
+2. 원격에 push하기전에 pull로 원격의 새로운 반영분을 가져온다
+
+3. 혹시 로걸과 원격의 같은 파일을 수정했다면 최종 수정후 pull한후 로컬에
+
+   commit하고 나서 team->remote->push를 한다
+
+
+
+[로컬 버전으로 GitHub의 버전 바꾸기]
+
+1.프로젝트  마우스 우클릭->Team->Show In History
+
+2.특정 시점으로 Check out 혹은 Reset(Hard)
+
+3.프로젝트  마우스 우클릭->Team->Remote->Push->Add all Branch spec 클릭 Force update체크->
+
+  next->finish
+
+
+
+
+주요 용어 정리
+형상관리 도구(TOOL)
+-버전(히스토리) 관리 도구.팀 협업시 유리한 도구
+
+CVS  ->  SVN   ->Git
+
+
+로컬 ->리모트 : push
+
+
+
+리모트->로컬:
+
+1.CLONE- 전체 가져오기 . 명령어로  git  clone  주소 입력시 github에 있는 전체 코드가
+
+              내 피시로 다운됨  즉 내피씨에 로컬 리포지터를 만듬            
+         
+
+
+
+아래 두개는 공동작업시유용.혼자 작업시에는 의미 없음 즉 전체가 아니라
+
+최신버전을 가져오는 것임.같은 브랜치인경우 이전 버전도 가져옴
+
+2.PULL- 가져와서 같은 브랜치를 합치는 명령어 모든 브랜치를 가져온다
+
+
+
+3.FETCH-변경된  내용만 가져오고 안 합치는 명령어
+
+        
+
+깃허브에서 다른 사람이 공개한 오픈 소스  프로젝트 가져와서 수정하기
+
+▶FORK -GITHUB.COM에서 다른 사람이 만든 리모트 리포지터리를   나의 깃허브 리모트 리포지터리로  옮기는 것
+
+
+
+▶PULL REQUEST-포크로 가져온 코드 수정후  가져가 달라고 요청하는것
+
+
+
+
+
+
+
+       
+
+
+Git(이클립스에 내장되어 있음)   + 원격 저장소(Github.com) 
+이클립스는 즉 소스트리+편집기+Git 기능이 융합된 도구임.
+-Working directory : 실제 파일이 존재하는 작업 공간 디렉토리
+- Index: Stage 또는 Staging area라고 하며, 커및할 준비가 된 스냅샵을 의미한다
+
+           작업공간의 변경된 파일을 저장소(로컬 혹은 원격)로 올리려면 반드시
+
+         Staging상태가 되야 된다
+-Repository : 저장소를 의미하며, 내 컴퓨터의 저장소인 local repository와 
+
+                 Github의 저장소인 remote repository가 있다.
+
+-Head : 현재 브랜치를 가리키는 포인터를 의미하며, 즉 지금 작업하고 있는 branch를 가르키는 포인터다.즉HEAD는 *현재 브랜치 마지막 커밋의 스냅샷*이다.
+
+.
+
+-add : Stage에 올리는 명령. 즉 커밋이 가능한 상태로 만드는 것
+
+-commit      :  변경된 파일을 확정하는 것.즉 save와 같다
+-push          : 원격 저장소로 업로드하는것
+-pull            :원격 저장소에 있는 파일을 로컬로 가져오는것+Merge
+-fetch          :원격 저장소에 있는 파일을 로컬로 가져오지만 로컬 저장소에 있는 파일하고 합치지(Merge)는 않는다
+-merge        :두개의 브랜치를 하나로 합치는것
+-Branch        :가지(master)  .새로운 작업 테스트시 사용하는 영역 즉
+                   독립된 worikng directory를 의미
+-checkout      :HEAD를 변경하는 것 즉 브랜치를 변경하는 것 혹은 특정 커밋 시점으로 되돌리는 것
+
+#별첨.
+
+[CLI 기반으로 Push시(Git Bash 터미널 사용) 계정 변경 방법]
+1. 계정 정보 확인
+$git config user.name
+$git config user.email
+
+2.계정바꾸기
+$git config --global  user.name 새로운 계정명
+$git config --global  user.email 새로운 이메일
+
+계정 변경후 Git Bash에소 Push시 아래 에러 발생
+
+remote: Permission to git주소 denied to 새로운 계정명. fatal: unable to access 'github주소': The requested URL returned error: 403
+
+3.Windows자겨증명 수정
+
+제어판 > 사용자 계정 > 자격 증명 관리자 > Windows 자격 증명 > Github-https://api.github.com/~항목 제거
+> 일반 자격증명 추가 
+
+인터넷 또는 네트워크 주소 : GitHub-https://api.github.com/새로운 계정명
+사용자 이름 : 새로운 계정명
+암호 : 새로운 계정명의 암호
+단,사용자 이름과 암호는 Github로그인 계정과 암호와 일치하지않아도 된다

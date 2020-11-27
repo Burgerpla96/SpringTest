@@ -16,19 +16,33 @@
 	</div>
 	<p>The time on the server is ${serverTime}.</p>
 	<fieldset>
+		<legend>Test Space</legend>
+			<c:url value="/tiles.do"/></br/><!--/springapp/tiles.do-->
+			${pageContext.request.contextPath}<br/> <!-- /springapp -->
+			
+			
+	
+	
+	
+	
+	
+	
+	
+	<!-- 
 		<legend>static resource(.img,.avi,.css,.js파일등) 표시방법</legend>
-		<h2>servlet-context.xml 파일의 설정된 resources tag사용-webapp/resources
-			디렉토리 아래에 리소스 저장</h2>
+		<h2>servlet-context.xml 파일의 설정된 resources tag사용-webapp/resources 디렉토리 아래에 리소스 저장</h2>
+	 -->
 		<!-- bean 설정 파일 servlet-context.xml에 맵핑명으로 경로 설정-->
 		<!--  
   			<img alt="resources mapping으로 static-안 나와야함" src="/springapp/static/Images/sumnail.png"/>
   			-->
 		<!--  실제 디렉토리로 경로 지정 -->
+		<!--  
 		<img height="200" width="200" alt="실제 디렉토리로 경로"
 			src="<c:url value="/resources/Images/sumnail.png"/>" /> <img
 			height="200" width="200" alt="실제 디렉토리로 경로2"
 			src="/springapp/resources/Images/sumnail.png" />
-
+		-->
 
 
 		<!-- bean 설정 파일 servlet-context.xml에 맵핑명으로 경로 설정-->
@@ -53,7 +67,7 @@
   			
   			-->
 
-
+<!--  
 		<h2>servlet-context.xml 파일의 설정된 resources tag사용- 폴더 생성후 맵핑이름
 			지정(폴더명과 같지 않아도 된다.)</h2>
 		<img id="img3" height="200" width="200"
@@ -65,7 +79,7 @@
 		<h2>resources tag 미사용-&lt;default-servlet-handler/&gt; 디렉토리명으로 접근</h2>
 		<img height="200" width="200" alt="디렉토리 구조로 접근"
 			src="<c:url value="/Images/sumnail.png"/>" />
-
+-->
 	</fieldset>
 
 
@@ -92,8 +106,7 @@
 			<li><a href="<c:url value="/aop.do"/>">AOP</a></li>
 			<li><a href="<c:url value="/websocket.do"/>">Web Socket</a></li>
 			<li><a href="<c:url value="/tiles.do"/>">Tiles Test</a></li>
-
-
+			
 		</ul>
 	</fieldset>
 
