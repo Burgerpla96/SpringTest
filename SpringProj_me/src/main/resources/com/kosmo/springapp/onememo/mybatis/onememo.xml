@@ -66,7 +66,6 @@
 	</insert>
 
 	
-	
 	<select id="memoGetTotalRecord" parameterType="java.util.Map" resultType="int">
 		SELECT COUNT(*) FROM onememo o JOIN member m ON o.id = m.id
 		<if test="searchColumn != null"><!-- EL문에서 ${} 뺀 것 처럼 쓰기 -->

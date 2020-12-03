@@ -114,6 +114,7 @@ public class OneMemoController {
 		
 		
 		List<OneMemoDTO> list= memoService.selectList(map);
+		
 		//데이타 저장]
 		String path = req.getContextPath();
 		if(map.get("searchWord")!=null) {

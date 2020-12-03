@@ -30,8 +30,7 @@
 						<input type="text" class="form-control" name="title" placeholder="제목을 입력하세요?" value="${record.title}">
 					</div>
 				</div>
-
-				​ ​
+				​ 
 				<div class="form-group">
 					<label class="col-sm-2 control-label">내용</label>
 					<!-- 중첩 컬럼 사용 -->

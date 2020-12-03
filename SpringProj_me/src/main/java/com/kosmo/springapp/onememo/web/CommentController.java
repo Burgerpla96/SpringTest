@@ -40,7 +40,7 @@ public class CommentController {
 	}//////////////write
 	
 	
-	//특정 글 번호에 대한 코멘트 목록 가졍괴
+	//특정 글 번호에 대한 코멘트 목록 가져오기
 	@ResponseBody
 	@RequestMapping(value = "List.do",produces = "text/html; charset=UTF-8")
 	public String list( @RequestParam Map map) {

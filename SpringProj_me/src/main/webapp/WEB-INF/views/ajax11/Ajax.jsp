@@ -84,7 +84,6 @@ body {
 		<!-- 
 		AJAX 할시 form을 사용하는 것은 의미없다.
 		xml ..request가 요청하는 것이고 submit하는게 아니기떄문...
-		
 		 -->
 		<form id="frm">
 			아이디 <input type="text" name="id" /> 
