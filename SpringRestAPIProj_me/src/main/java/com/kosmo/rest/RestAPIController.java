@@ -23,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kosmo.rest.service.ContactsDAO;
 import com.kosmo.rest.service.ContactsDTO;
+import com.kosmo.rest.service.MemberDAO;
+import com.kosmo.rest.service.MemberDTO;
+import com.kosmo.rest.service.PhotoDTO;
 import com.kosmo.rest.service.UsersDTO;
 
 /*
@@ -222,6 +225,66 @@ public class RestAPIController {
 	public String delete(@PathVariable String contact_id) {
 		return contacts.delete(contact_id)==1?"삭제성공":"삭제실패";
 	}
+	
+	
+	
+	
+	
+	//[안드로이드 앱에 데이터 제공용 추가]
+	@Resource(name="memberDAO")
+	private MemberDAO memberDao;
+	
+	
+	@CrossOrigin
+	@GetMapping(value= "/member/json")
+	public MemberDTO ismemberJsonByGet(MemberDTO member) {
+		
+		return memberDao.isLogin(member);
+	}
+	
+	@CrossOrigin
+	@PostMapping(value= "/member/json")
+	public MemberDTO ismemberJsonByPost(MemberDTO member) {
+		
+		return memberDao.isLogin(member);
+	}
+	
+	//사진들
+	@CrossOrigin
+	@GetMapping(value= "/photos")
+	public List<PhotoDTO> photos(MemberDTO member) {
+		//DB 연동 없이 하드코딩
+		List<PhotoDTO> photos = new Vector<PhotoDTO>();
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/111111.png", "첫 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/20a3b5.png", "두 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/24f355.png", "세 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/2643ad.png", "네 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/333333.png", "다섯 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/534ab3.png", "여섯 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/777777.png", "일곱 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/77ad02.png", "여덟 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/ab4032.png", "아홉 번째 이미지 입니다."));
+		photos.add(new PhotoDTO("http://192.168.0.25:8080/rest/upload/adaba3.png", "열 번째 이미지 입니다."));
+		
+		return photos;
+	}
+	
+	
+	
+	//안드로이드 사진 찍으면 upload 파일로 저장된다.
+	@CrossOrigin
+	@PostMapping(value= "/upload", produces = "text/plain; charset=UTF-8")
+	public String upload(@RequestPart MultipartFile picture, HttpServletRequest req) throws IllegalStateException, IOException {
+		//1)서버의 물리적 경로 얻기
+		String path = req.getSession().getServletContext().getRealPath("/upload");
+		//2) 파일 객체 생성
+		File file = new File(path+File.separator+picture.getOriginalFilename());
+		//3) 업로드 처리
+		picture.transferTo(file);
+		
+		return "업로드 성공";
+	}///////////upload 
+	
 	
 	
 	
