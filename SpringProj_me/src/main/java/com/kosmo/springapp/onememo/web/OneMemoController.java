@@ -64,9 +64,9 @@ public class OneMemoController {
 	//리소스 파일 (onememo.properties)에서 읽어오기
 	//@Value 롬복꺼 아니다!!
 	@Value("${PAGE_SIZE}")
-	private int pageSize;
+	private int pageSize;//한 페이지에 보이는 수
 	@Value("${BLOCK_PAGE}")
-	private int blockPage;
+	private int blockPage;//paging UI 에서 몇번째 페이지까지 선택가능한지
 	//목록 처리]
 	@RequestMapping("List.do")
 	public String list(

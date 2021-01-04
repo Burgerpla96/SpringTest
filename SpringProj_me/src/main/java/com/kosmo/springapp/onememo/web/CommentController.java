@@ -68,7 +68,6 @@ public class CommentController {
 		commentService.update(map);
 		//원본글: 댓글 번호 반환(확인 차원에서 하는 것 null이나 빈 문자열 반환해도 된다.)
 		return String.format("%s : %s", map.get("no").toString(),map.get("cno").toString());
-		
 	}
 	
 	
@@ -80,7 +79,6 @@ public class CommentController {
 		commentService.delete(map);
 		//삭제 댓글 번호 반환 (확인용)
 		return String.format("%s", map.get("cno").toString());
-		
 	}
 	
 	
